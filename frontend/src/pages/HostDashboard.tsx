@@ -1,254 +1,226 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { PriceChart, ConfidenceChart, PricePerSqFtChart } from '../components/AnalyticsCharts';
 
-interface PropertyForm {
+interface Property {
+  id: string;
   title: string;
   location: string;
+  price: number;
+  status: string;
   bedrooms: number;
   bathrooms: number;
   area: number;
-  amenities: string[];
 }
 
-interface PricePrediction {
+interface PredictionData {
   predictedPrice: number;
   confidence: number;
+  averageMarketPrice: number;
+  pricePerSqFt: number;
 }
 
 const HostDashboard = () => {
-  const [propertyForm, setPropertyForm] = useState<PropertyForm>({
-    title: '',
-    location: '',
-    bedrooms: 1,
-    bathrooms: 1,
-    area: 500,
-    amenities: []
-  });
-
-  const [pricePrediction, setPricePrediction] = useState<PricePrediction | null>(null);
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [predictionData, setPredictionData] = useState<PredictionData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [amenityInput, setAmenityInput] = useState('');
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    setPropertyForm(prev => ({
-      ...prev,
-      [name]: type === 'number' ? parseInt(value) : value
-    }));
-  };
+  useEffect(() => {
+    // Fetch demo properties
+    fetch('http://localhost:5000/api/properties/demo')
+      .then(res => res.json())
+      .then(data => setProperties(data))
+      .catch(error => console.error('Error fetching properties:', error));
+  }, []);
 
-  const handleAddAmenity = () => {
-    if (amenityInput.trim() && !propertyForm.amenities.includes(amenityInput.trim())) {
-      setPropertyForm(prev => ({
-        ...prev,
-        amenities: [...prev.amenities, amenityInput.trim()]
-      }));
-      setAmenityInput('');
-    }
-  };
-
-  const handleRemoveAmenity = (amenity: string) => {
-    setPropertyForm(prev => ({
-      ...prev,
-      amenities: prev.amenities.filter(a => a !== amenity)
-    }));
-  };
-
-  const handlePredictPrice = async () => {
+  const handlePredictPrice = async (property: Property) => {
     setIsLoading(true);
     try {
-      // Mock ML prediction - in real app, call ML service
-      setTimeout(() => {
-        const mockPrediction: PricePrediction = {
-          predictedPrice: Math.floor(Math.random() * 300) + 100,
-          confidence: Math.random() * 0.3 + 0.7 // 70-100% confidence
-        };
-        setPricePrediction(mockPrediction);
-        setIsLoading(false);
-      }, 1500);
+      const response = await fetch('http://localhost:5000/api/predict-price', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          city: property.location.split(',')[0], // Extract city from location
+          bedrooms: property.bedrooms,
+          bathrooms: property.bathrooms,
+          accommodates: property.bedrooms + 1, // Estimate
+          property_type: 'Apartment'
+        })
+      });
+      
+      const data = await response.json();
+      const averageMarketPrice = property.price * 1.1; // Simulated market average
+      
+      setPredictionData({
+        predictedPrice: data.predicted_price,
+        confidence: data.confidence,
+        averageMarketPrice,
+        pricePerSqFt: data.predicted_price / property.area
+      });
     } catch (error) {
-      console.error('Error predicting price:', error);
+      console.error('Prediction error:', error);
+    } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSubmitProperty = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      // Mock API call - in real app, call backend
-      console.log('Submitting property:', propertyForm);
-      alert('Property listed successfully!');
-      setPropertyForm({
-        title: '',
-        location: '',
-        bedrooms: 1,
-        bathrooms: 1,
-        area: 500,
-        amenities: []
-      });
-      setPricePrediction(null);
-    } catch (error) {
-      console.error('Error submitting property:', error);
-      alert('Error listing property');
-    }
-  };
-
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <h1 className="text-4xl font-bold text-gray-900 mb-8">Host Dashboard</h1>
       
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-semibold mb-6">Add New Property</h2>
-        
-        <form onSubmit={handleSubmitProperty} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Property Title
-              </label>
-              <input
-                type="text"
-                name="title"
-                value={propertyForm.title}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Location
-              </label>
-              <input
-                type="text"
-                name="location"
-                value={propertyForm.location}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Bedrooms
-              </label>
-              <input
-                type="number"
-                name="bedrooms"
-                min="1"
-                value={propertyForm.bedrooms}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Bathrooms
-              </label>
-              <input
-                type="number"
-                name="bathrooms"
-                min="1"
-                value={propertyForm.bathrooms}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Area (sqft)
-              </label>
-              <input
-                type="number"
-                name="area"
-                min="100"
-                value={propertyForm.area}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Amenities
-            </label>
-            <div className="flex space-x-2 mb-3">
-              <input
-                type="text"
-                value={amenityInput}
-                onChange={(e) => setAmenityInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddAmenity())}
-                placeholder="Add amenity (e.g., WiFi, Pool, Kitchen)"
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              <button
-                type="button"
-                onClick={handleAddAmenity}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
-              >
-                Add
-              </button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {propertyForm.amenities.map((amenity) => (
-                <span
-                  key={amenity}
-                  className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-indigo-100 text-indigo-800"
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Properties List */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-semibold mb-6">Your Properties</h2>
+          
+          <div className="space-y-4">
+            {properties.map((property) => (
+              <div key={property.id} className="border rounded-lg p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-lg font-semibold">{property.title}</h3>
+                  <span className={`px-2 py-1 rounded text-sm font-medium ${
+                    property.status === 'Available' 
+                      ? 'bg-green-100 text-green-800' 
+                      : property.status === 'Sold Out' 
+                        ? 'bg-red-100 text-red-800'
+                        : 'bg-gray-100 text-gray-800'
+                  }`}>
+                    {property.status}
+                  </span>
+                </div>
+                
+                <p className="text-gray-600 mb-2">{property.location}</p>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-2xl font-bold text-indigo-600">${property.price}</span>
+                  <span className="text-gray-500">per night</span>
+                </div>
+                
+                <div className="grid grid-cols-3 gap-4 text-sm text-gray-600 mb-4">
+                  <span>{property.bedrooms} beds</span>
+                  <span>{property.bathrooms} baths</span>
+                  <span>{property.area} sqft</span>
+                </div>
+                
+                <button
+                  onClick={() => handlePredictPrice(property)}
+                  disabled={isLoading}
+                  className="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
-                  {amenity}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveAmenity(amenity)}
-                    className="ml-2 text-indigo-600 hover:text-indigo-800"
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
-            </div>
+                  {isLoading ? 'Predicting...' : 'Get AI Price Prediction'}
+                </button>
+              </div>
+            ))}
           </div>
+        </div>
 
-          <div className="border-t pt-6">
-            <button
-              type="button"
-              onClick={handlePredictPrice}
-              disabled={isLoading || !propertyForm.title || !propertyForm.location}
-              className="w-full md:w-auto px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed mb-4"
-            >
-              {isLoading ? 'Predicting...' : 'Get AI Price Prediction'}
-            </button>
-
-            {pricePrediction && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                <h3 className="text-lg font-semibold text-green-800 mb-2">
-                  🤖 AI Price Prediction
-                </h3>
-                <div className="space-y-1">
-                  <p className="text-green-700">
-                    <strong>Recommended Price:</strong> ${pricePrediction.predictedPrice} per night
-                  </p>
-                  <p className="text-green-600 text-sm">
-                    <strong>Confidence:</strong> {(pricePrediction.confidence * 100).toFixed(1)}%
-                  </p>
+        {/* Analytics Section */}
+        {predictionData && (
+          <div className="space-y-6">
+            {/* Price Comparison */}
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h3 className="text-lg font-semibold mb-4">Price Analysis</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-indigo-600">
+                    ${predictionData.predictedPrice}
+                  </div>
+                  <div className="text-sm text-gray-600">AI Predicted</div>
+                </div>
+                
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-gray-600">
+                    ${predictionData.averageMarketPrice}
+                  </div>
+                  <div className="text-sm text-gray-600">Market Average</div>
+                </div>
+                
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">
+                    ${Math.round(predictionData.predictedPrice - predictionData.averageMarketPrice)}
+                  </div>
+                  <div className="text-sm text-gray-600">Difference</div>
                 </div>
               </div>
-            )}
-          </div>
+              
+              <PriceChart 
+                prediction={{
+                  predictedPrice: predictionData.predictedPrice,
+                  confidence: predictionData.confidence
+                }} 
+              />
+            </div>
 
-          <button
-            type="submit"
-            className="w-full px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-          >
-            List Property
-          </button>
-        </form>
+            {/* Confidence Score */}
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h3 className="text-lg font-semibold mb-4">Confidence Analysis</h3>
+              
+              <div className="flex items-center justify-center mb-4">
+                <div className="text-center">
+                  <div className={`text-5xl font-bold ${
+                    predictionData.confidence > 0.8 ? 'text-green-600' : 
+                    predictionData.confidence > 0.6 ? 'text-yellow-600' : 'text-red-600'
+                  }`}>
+                    {(predictionData.confidence * 100).toFixed(1)}%
+                  </div>
+                  <div className="text-sm text-gray-600 mt-2">Prediction Confidence</div>
+                </div>
+              </div>
+              
+              <ConfidenceChart 
+                prediction={{
+                  predictedPrice: predictionData.predictedPrice,
+                  confidence: predictionData.confidence
+                }} 
+              />
+            </div>
+
+            {/* Price per Square Foot */}
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h3 className="text-lg font-semibold mb-4">Efficiency Metrics</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <div className="text-3xl font-bold text-indigo-600">
+                    ${predictionData.pricePerSqFt.toFixed(2)}
+                  </div>
+                  <div className="text-sm text-gray-600">Price per SqFt</div>
+                </div>
+                
+                <div>
+                  <div className="text-lg font-semibold text-gray-700 mb-2">
+                    Market Comparison
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Budget Properties:</span>
+                      <span className="font-medium">$0.80/sqft</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Average Properties:</span>
+                      <span className="font-medium">$1.20/sqft</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Premium Properties:</span>
+                      <span className="font-medium">$2.50/sqft</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Your Property:</span>
+                      <span className="font-bold text-indigo-600">${predictionData.pricePerSqFt.toFixed(2)}/sqft</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <PricePerSqFtChart 
+                prediction={{
+                  predictedPrice: predictionData.predictedPrice,
+                  confidence: predictionData.confidence
+                }} 
+                area={properties.find(p => p.status === 'Available')?.area || 1000}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,0 +1,19 @@
+city,latitude,longitude,bedrooms,bathrooms,accommodates,property_type,room_type,minimum_nights,number_of_reviews,availability_365,price
+New York,40.7128,-74.0060,2,1,4,Apartment,Entire home/apt,3,45,320,150
+Los Angeles,34.0522,-118.2437,3,2,6,House,Entire home/apt,2,128,280,220
+Chicago,41.8781,-87.6298,1,1,2,Apartment,Private room,1,23,340,120
+Miami,25.7617,-80.1918,2,2,4,Condo,Entire home/apt,5,67,310,180
+San Francisco,37.7749,-122.4194,1,1,2,Apartment,Private room,2,89,290,200
+Seattle,47.6062,-122.3321,2,1,3,House,Entire home/apt,3,156,365,175
+Boston,42.3601,-71.0589,3,2,5,Apartment,Entire home/apt,4,234,298,190
+Austin,30.2672,-97.7431,2,1,4,House,Entire home/apt,2,78,312,160
+Denver,39.7392,-104.9903,1,1,2,Apartment,Private room,1,45,289,110
+Portland,45.5152,-122.6784,2,2,4,Condo,Entire home/apt,3,167,301,155
+Las Vegas,36.1699,-115.1398,1,1,2,Apartment,Entire home/apt,2,234,276,130
+Nashville,36.1627,-86.7816,3,2,6,House,Entire home/apt,3,189,267,175
+Atlanta,33.7490,-84.3880,2,1,4,Apartment,Entire home/apt,2,145,334,145
+Phoenix,33.4484,-112.0740,2,2,4,House,Entire home/apt,4,223,287,165
+Charlotte,35.2271,-80.8431,3,2,5,Condo,Entire home/apt,3,98,276,140
+San Diego,32.7157,-117.1611,2,1,3,Apartment,Private room,2,123,312,135
+Orlando,28.5383,-81.3792,4,3,8,Villa,Entire home/apt,5,267,278,280
+Dallas,32.7767,-96.7970,2,2,4,House,Entire home/apt,3,178,289,155

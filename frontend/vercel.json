@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "name": "stay-ready",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html",
+      "methods": ["GET", "HEAD", "OPTIONS"]
+    }
+  ],
+  "env": {
+    "VITE_API_URL": "@api_url",
+    "VITE_ML_SERVICE_URL": "@ml_service_url",
+    "VITE_ENVIRONMENT": "production"
+  }
+}
