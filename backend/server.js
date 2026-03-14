@@ -380,6 +380,23 @@ app.get('/api/users', async (req, res) => {
   }
 });
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({
+    message: 'StayReady Backend API',
+    version: '1.0.0',
+    status: 'Running',
+    endpoints: {
+      health: '/api/health',
+      properties: '/api/properties',
+      demo_properties: '/api/properties/demo',
+      bookings: '/api/bookings',
+      users: '/api/users'
+    },
+    documentation: 'https://github.com/priyyannshhu/StayReady'
+  });
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ 
