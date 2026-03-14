@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import type { LatLngExpression } from 'leaflet';
 import Papa from 'papaparse';
 import { PriceChart, ConfidenceChart, PricePerSqFtChart } from '../components/AnalyticsCharts';
+import { API_BASE_URL } from '../config/api';
 import 'leaflet/dist/leaflet.css';
 
 interface ManualPredictionForm {
@@ -66,7 +67,7 @@ const Prediction = () => {
   const handleManualPrediction = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/predict-price', {
+      const response = await fetch(`${API_BASE_URL}/predict-price`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -108,7 +109,7 @@ const Prediction = () => {
       const city = geocodeData.address?.city || geocodeData.address?.town || 'Unknown';
       
       // Predict using location
-      const response = await fetch('http://localhost:5000/api/predict-price', {
+      const response = await fetch(`${API_BASE_URL}/predict-price`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -155,7 +156,7 @@ const Prediction = () => {
 
     for (const row of csvData) {
       try {
-        const response = await fetch('http://localhost:5000/api/predict-price', {
+        const response = await fetch(`${API_BASE_URL}/predict-price`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

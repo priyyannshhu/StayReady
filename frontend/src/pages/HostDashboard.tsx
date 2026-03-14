@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { PriceChart, ConfidenceChart, PricePerSqFtChart } from '../components/AnalyticsCharts';
+import { API_BASE_URL } from '../config/api';
 
 interface Property {
   id: string;
@@ -26,7 +27,7 @@ const HostDashboard = () => {
 
   useEffect(() => {
     // Fetch demo properties
-    fetch('http://localhost:5000/api/properties/demo')
+    fetch(`${API_BASE_URL}/properties/demo`)
       .then(res => res.json())
       .then(data => setProperties(data))
       .catch(error => console.error('Error fetching properties:', error));
@@ -35,7 +36,7 @@ const HostDashboard = () => {
   const handlePredictPrice = async (property: Property) => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/predict-price', {
+      const response = await fetch(`${API_BASE_URL}/predict-price`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
