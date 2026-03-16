@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Star, Heart, Bed, Bath, Maximize } from 'lucide-react';
 import { useState } from 'react';
+import { formatCurrency } from '../lib/currency';
 
 interface Property {
   id: string;
@@ -28,9 +29,9 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onBook }) => {
   const reviews = property.reviewCount ?? Math.floor(20 + Math.random() * 80);
 
   return (
-    <div className="property-card group">
-      {/* Image Container — 4:3 ratio */}
-      <div className="relative w-full overflow-hidden rounded-xl" style={{ aspectRatio: '4/3' }}>
+    <div className="property-card group bg-white rounded-2xl shadow-luxury overflow-hidden hover:shadow-xl transition-all duration-300 border border-brand-border/50 hover:border-primary/30">
+      {/* Image Container — enhanced responsive */}
+      <div className="relative w-full overflow-hidden rounded-t-2xl" style={{ aspectRatio: '4/3' }}>
         <img
           src={property.image}
           alt={property.title}
@@ -38,27 +39,27 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onBook }) => {
           loading="lazy"
         />
 
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-card opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
+        {/* Enhanced gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300" />
 
-        {/* Wishlist heart */}
+        {/* Enhanced status badge */}
+        {property.status === 'Sold Out' && (
+          <div className="absolute top-4 left-4 px-3 py-1.5 bg-red-500 text-white text-xs font-semibold rounded-full shadow-lg">
+            Sold Out
+          </div>
+        )}
+
+        {/* Enhanced wishlist heart */}
         <button
           onClick={(e) => { e.stopPropagation(); setWishlisted(!wishlisted); }}
-          className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-all duration-150 shadow-sm"
+          className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-white/95 backdrop-blur-md hover:bg-white hover:scale-110 transition-all duration-200 shadow-lg border border-white/20"
           aria-label="Add to wishlist"
         >
           <Heart
-            className={`w-4 h-4 transition-colors duration-150 ${wishlisted ? 'fill-primary text-primary' : 'text-brand-charcoal'}`}
-            strokeWidth={wishlisted ? 0 : 2}
+            className={`w-5 h-5 transition-all duration-200 ${wishlisted ? 'fill-brand-saffron text-brand-saffron' : 'text-brand-charcoal'}`}
+            strokeWidth={wishlisted ? 0 : 1.5}
           />
         </button>
-
-        {/* Status badge */}
-        {property.status === 'Sold Out' && (
-          <div className="absolute top-3 left-3">
-            <span className="badge-soldout">Sold Out</span>
-          </div>
-        )}
 
         {/* Book now hover CTA */}
         {property.status === 'Available' && (
@@ -112,7 +113,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, onBook }) => {
         {/* Price — bottom left */}
         <div className="mt-2 flex items-center justify-between">
           <div>
-            <span className="price-tag text-sm">${property.price}</span>
+            <span className="price-tag text-sm font-semibold">{formatCurrency(property.price)}</span>
             <span className="text-muted-foreground text-xs"> / night</span>
           </div>
           <span className="text-xs text-muted-foreground">{reviews} reviews</span>

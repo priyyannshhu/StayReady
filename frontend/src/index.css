@@ -22,32 +22,42 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 13%;
 
-    /* Brand: Vibrant Rose (#FF385C) */
-    --primary: 349 100% 60%;
+    /* Brand: Premium Saffron Theme */
+    --primary: 28 100% 62%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 349 100% 53%;
+    --primary-hover: 28 100% 55%;
 
-    /* Secondary: Off-white surface (#F7F7F7) */
-    --secondary: 0 0% 97%;
-    --secondary-foreground: 0 0% 13%;
+    /* Secondary: Elegant Emerald */
+    --secondary: 174 84% 40%;
+    --secondary-foreground: 0 0% 100%;
 
-    /* Muted: Light gray text */
-    --muted: 0 0% 97%;
+    /* Muted: Soft Surface */
+    --muted: 210 40% 98%;
     --muted-foreground: 0 0% 44%;
 
-    /* Accent: Off-white hover */
-    --accent: 0 0% 97%;
-    --accent-foreground: 0 0% 13%;
+    /* Accent: Premium Gold */
+    --accent: 45 100% 47%;
+    --accent-foreground: 0 0% 100%;
 
     /* Destructive */
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
     /* Borders */
-    --border: 0 0% 87%;
-    --input: 0 0% 87%;
-    --ring: 349 100% 60%;
+    --border: 210 40% 96%;
+    --input: 210 40% 96%;
+    --ring: 28 100% 62%;
 
+    /* Premium Brand Colors */
+    --brand-saffron: 39 100% 62%;
+    --brand-emerald: 174 84% 40%;
+    --brand-royal: 220 90% 48%;
+    --brand-gold: 45 100% 47%;
+    --brand-charcoal: 0 0% 10%;
+    --brand-surface: 250 40% 98%;
+    --brand-border: 210 40% 96%;
+
+    /* Radius */
     --radius: 0.75rem;
 
     /* Extended tokens */

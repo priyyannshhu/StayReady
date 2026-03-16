@@ -6,6 +6,7 @@ import {
   ArrowLeft, Star, Bed, Bath, Maximize, Wifi, Utensils, Car, Waves,
   Flame, Thermometer, Dumbbell, ChevronRight, Heart, Share2, Shield, MapPin
 } from 'lucide-react';
+import { formatCurrency } from '../lib/currency';
 
 interface Property {
   id: string;
@@ -233,7 +234,7 @@ const PropertyDetail = () => {
           <div className="lg:col-span-1">
             <div className="sticky top-24 border border-brand-border rounded-3xl p-6 shadow-card">
               <div className="flex items-end gap-1 mb-1">
-                <span className="font-display font-700 text-2xl text-brand-charcoal">${property.price}</span>
+                <span className="font-display font-700 text-2xl text-brand-charcoal">{formatCurrency(property.price)}</span>
                 <span className="text-muted-foreground text-sm mb-1">/ night</span>
               </div>
               <div className="flex items-center gap-1 mb-5">
@@ -274,8 +275,8 @@ const PropertyDetail = () => {
               {/* Fee breakdown */}
               <div className="mt-5 space-y-3">
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground underline cursor-pointer">${property.price} × 3 nights</span>
-                  <span className="text-brand-charcoal">${property.price * 3}</span>
+                  <span className="text-muted-foreground underline cursor-pointer">{formatCurrency(property.price)} × 3 nights</span>
+                  <span className="text-brand-charcoal">{formatCurrency(property.price * 3)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground underline cursor-pointer">Cleaning fee</span>
@@ -288,7 +289,7 @@ const PropertyDetail = () => {
                 <div className="h-px bg-brand-border" />
                 <div className="flex justify-between font-display font-700 text-brand-charcoal">
                   <span>Total</span>
-                  <span>${property.price * 3 + Math.round(property.price * 0.15) + Math.round(property.price * 3 * 0.12)}</span>
+                  <span>{formatCurrency(property.price * 3 + Math.round(property.price * 0.15) + Math.round(property.price * 3 * 0.12))}</span>
                 </div>
               </div>
             </div>
