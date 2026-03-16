@@ -27,8 +27,6 @@ import {
 import { PriceChart, ConfidenceChart, PricePerSqFtChart } from '../components/AnalyticsCharts';
 import Footer from '../components/Footer';
 
-gsap.registerPlugin(ScrollTrigger);
-
 interface ManualPredictionForm {
   country: string;
   city: string;
