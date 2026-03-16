@@ -1,3 +1,293 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* =============================================
+   StayReady Design System
+   Airbnb-Inspired High-Trust Hospitality UI
+   All colors MUST be HSL.
+   ============================================= */
+
+@layer base {
+  :root {
+    /* Core Surfaces */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 13%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 13%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 13%;
+
+    /* Brand: Vibrant Rose (#FF385C) */
+    --primary: 349 100% 60%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 349 100% 53%;
+
+    /* Secondary: Off-white surface (#F7F7F7) */
+    --secondary: 0 0% 97%;
+    --secondary-foreground: 0 0% 13%;
+
+    /* Muted: Light gray text */
+    --muted: 0 0% 97%;
+    --muted-foreground: 0 0% 44%;
+
+    /* Accent: Off-white hover */
+    --accent: 0 0% 97%;
+    --accent-foreground: 0 0% 13%;
+
+    /* Destructive */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders */
+    --border: 0 0% 87%;
+    --input: 0 0% 87%;
+    --ring: 349 100% 60%;
+
+    --radius: 0.75rem;
+
+    /* Extended tokens */
+    --text-primary: 0 0% 13%;
+    --text-secondary: 0 0% 44%;
+    --surface: 0 0% 97%;
+    --divider: 0 0% 87%;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.55) 100%);
+    --gradient-card-overlay: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%);
+
+    /* Shadows */
+    --shadow-card: 0 1px 2px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05);
+    --shadow-nav: 0 2px 20px rgba(0,0,0,0.08);
+    --shadow-modal: 0 20px 60px rgba(0,0,0,0.2);
+    --shadow-btn: 0 4px 14px rgba(255,56,92,0.4);
+
+    /* Sidebar (kept for compatibility) */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 349 100% 60%;
+  }
+
+  .dark {
+    --background: 0 0% 8%;
+    --foreground: 0 0% 96%;
+    --card: 0 0% 11%;
+    --card-foreground: 0 0% 96%;
+    --popover: 0 0% 11%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 349 100% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 96%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 64%;
+    --accent: 0 0% 15%;
+    --accent-foreground: 0 0% 96%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 96%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 349 100% 60%;
+    --sidebar-background: 0 0% 9%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 349 100% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 13%;
+    --sidebar-accent-foreground: 0 0% 90%;
+    --sidebar-border: 0 0% 16%;
+    --sidebar-ring: 349 100% 60%;
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    color: hsl(var(--text-primary));
+  }
+}
+
+@layer components {
+  /* Glassmorphism Navbar */
+  .navbar-glass {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid hsl(var(--divider));
+    box-shadow: var(--shadow-nav);
+  }
+
+  /* Search pill */
+  .search-pill {
+    border: 1px solid hsl(var(--divider));
+    border-radius: 9999px;
+    background: hsl(var(--background));
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 150ms ease;
+  }
+  .search-pill:hover {
+    box-shadow: 0 2px 16px rgba(0,0,0,0.12);
+  }
+
+  /* Property Card */
+  .property-card {
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 150ms ease;
+    cursor: pointer;
+  }
+  .property-card:hover {
+    transform: translateY(-2px);
+  }
+  .property-card:hover .card-image {
+    transform: scale(1.04);
+  }
+
+  .card-image {
+    transition: transform 150ms ease;
+  }
+
+  /* Primary CTA Button */
+  .btn-primary {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    transition: background 150ms ease, box-shadow 150ms ease, transform 100ms ease;
+  }
+  .btn-primary:hover {
+    background: hsl(var(--primary-hover));
+    box-shadow: var(--shadow-btn);
+  }
+  .btn-primary:active {
+    transform: scale(0.98);
+  }
+
+  /* Rose gradient button */
+  .btn-rose-gradient {
+    background: linear-gradient(135deg, hsl(349 100% 60%), hsl(349 100% 50%));
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+  }
+
+  /* Modal overlay */
+  .modal-overlay {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+  }
+
+  /* Amenity tag */
+  .amenity-tag {
+    background: hsl(var(--surface));
+    border: 1px solid hsl(var(--divider));
+    border-radius: 6px;
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    color: hsl(var(--text-secondary));
+    font-weight: 500;
+  }
+
+  /* Filter chip */
+  .filter-chip {
+    border: 1px solid hsl(var(--divider));
+    border-radius: 9999px;
+    padding: 8px 16px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: hsl(var(--text-primary));
+    background: hsl(var(--background));
+    transition: all 150ms ease;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .filter-chip:hover,
+  .filter-chip.active {
+    background: hsl(var(--text-primary));
+    color: hsl(var(--background));
+    border-color: hsl(var(--text-primary));
+  }
+
+  /* Skeleton pulse */
+  .skeleton {
+    background: linear-gradient(90deg, hsl(var(--surface)) 25%, hsl(0 0% 92%) 50%, hsl(var(--surface)) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s infinite;
+    border-radius: 8px;
+  }
+  @keyframes skeleton-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* Star rating */
+  .star-rating {
+    color: hsl(var(--text-primary));
+    font-weight: 600;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  /* Section divider */
+  .section-divider {
+    height: 1px;
+    background: hsl(var(--divider));
+    margin: 24px 0;
+  }
+
+  /* Price tag */
+  .price-tag {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    color: hsl(var(--text-primary));
+  }
+
+  /* Badge available */
+  .badge-available {
+    background: hsl(142 76% 93%);
+    color: hsl(142 76% 26%);
+    border-radius: 9999px;
+    padding: 2px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  /* Badge sold-out */
+  .badge-soldout {
+    background: hsl(0 0% 93%);
+    color: hsl(0 0% 44%);
+    border-radius: 9999px;
+    padding: 2px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  /* Footer */
+  .footer-stayready {
+    background: hsl(var(--text-primary));
+    color: hsl(0 0% 87%);
+  }
+}

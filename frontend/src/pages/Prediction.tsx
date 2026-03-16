@@ -1,10 +1,7 @@
 import { useState } from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
-import type { LatLngExpression } from 'leaflet';
-import Papa from 'papaparse';
 import { PriceChart, ConfidenceChart, PricePerSqFtChart } from '../components/AnalyticsCharts';
-import { API_BASE_URL } from '../config/api';
-import 'leaflet/dist/leaflet.css';
+import Footer from '../components/Footer';
+import { TrendingUp, MapPin, Home, Bed, Bath, Maximize, Loader2, Sparkles, ChevronRight } from 'lucide-react';
 
 interface ManualPredictionForm {
   country: string;
@@ -21,18 +18,15 @@ interface ManualPredictionForm {
 interface PredictionResult {
   predictedPrice: number;
   confidence: number;
-  features?: any;
+  features?: Record<string, unknown>;
   fallback?: boolean;
   city?: string;
-  coordinates?: { lat: number; lng: number };
 }
 
-interface CSVRow {
-  [key: string]: any;
-}
+const PROPERTY_TYPES = ['Apartment', 'Villa', 'House', 'Condo', 'Studio', 'Cabin', 'Townhouse'];
+const FURNISHING_OPTIONS = ['furnished', 'semi-furnished', 'unfurnished'];
 
 const Prediction = () => {
-  const [mode, setMode] = useState<'manual' | 'map' | 'csv'>('manual');
   const [manualForm, setManualForm] = useState<ManualPredictionForm>({
     country: 'United States',
     city: '',
@@ -42,509 +36,297 @@ const Prediction = () => {
     area: 500,
     furnishing: 'furnished',
     parking: false,
-    propertyAge: 5
+    propertyAge: 5,
   });
-  
   const [prediction, setPrediction] = useState<PredictionResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
-  const [csvData, setCsvData] = useState<CSVRow[]>([]);
-  const [csvResults, setCsvResults] = useState<PredictionResult[]>([]);
-  const [isProcessingCSV, setIsProcessingCSV] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
 
-  // Map click handler
-  const MapClickHandler = () => {
-    useMapEvents({
-      click: (e) => {
-        setSelectedLocation({ lat: e.latlng.lat, lng: e.latlng.lng });
-        predictFromLocation(e.latlng.lat, e.latlng.lng);
-      },
-    });
-    return null;
-  };
-
-  const handleManualPrediction = async () => {
+  const handleManualSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setIsLoading(true);
+    setPrediction(null);
+    setShowAnalytics(false);
     try {
-      const response = await fetch(`${API_BASE_URL}/predict-price`, {
+      const response = await fetch('/api/predict-price', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...manualForm,
-          amenities: []
-        })
+          country: manualForm.country,
+          city: manualForm.city,
+          property_type: manualForm.propertyType,
+          bedrooms: manualForm.bedrooms,
+          bathrooms: manualForm.bathrooms,
+          area: manualForm.area,
+          furnishing: manualForm.furnishing,
+          parking: manualForm.parking,
+          property_age: manualForm.propertyAge,
+          accommodates: manualForm.bedrooms + 1,
+        }),
       });
-      const result = await response.json();
-      setPrediction(result);
+      const data = await response.json();
+      setPrediction({ predictedPrice: data.predicted_price, confidence: data.confidence, ...data });
       setShowAnalytics(true);
     } catch (error) {
       console.error('Prediction error:', error);
-      // Fallback prediction
-      const fallbackPrice = Math.round(
-        (manualForm.area * 0.8) + 
-        (manualForm.bedrooms * 50) + 
-        (manualForm.bathrooms * 40) + 
-        (manualForm.parking ? 30 : 0) +
-        (manualForm.furnishing === 'furnished' ? 50 : 0)
-      );
-      setPrediction({
-        predictedPrice: fallbackPrice,
-        confidence: 0.75,
-        fallback: true
-      });
-      setShowAnalytics(true);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
-  };
-
-  const predictFromLocation = async (lat: number, lng: number) => {
-    setIsLoading(true);
-    try {
-      // Reverse geocoding to get city
-      const geocodeResponse = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
-      );
-      const geocodeData = await geocodeResponse.json();
-      const city = geocodeData.address?.city || geocodeData.address?.town || 'Unknown';
-      
-      // Predict using location
-      const response = await fetch(`${API_BASE_URL}/predict-price`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          location: city,
-          bedrooms: 2,
-          bathrooms: 1,
-          area: 800,
-          amenities: ['WiFi', 'Kitchen']
-        })
-      });
-      const result = await response.json();
-      setPrediction({ ...result, city, coordinates: { lat, lng } });
-      setShowAnalytics(true);
-    } catch (error) {
-      console.error('Location prediction error:', error);
-      setPrediction({
-        predictedPrice: 200,
-        confidence: 0.6,
-        fallback: true
-      });
-      setShowAnalytics(true);
-    }
-    setIsLoading(false);
-  };
-
-  const handleCSVUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    Papa.parse(file, {
-      header: true,
-      complete: (results: any) => {
-        setCsvData(results.data as CSVRow[]);
-      },
-      error: (error: any) => {
-        console.error('CSV parsing error:', error);
-      }
-    });
-  };
-
-  const processCSVPredictions = async () => {
-    setIsProcessingCSV(true);
-    const results: PredictionResult[] = [];
-
-    for (const row of csvData) {
-      try {
-        const response = await fetch(`${API_BASE_URL}/predict-price`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            location: row.city || 'Unknown',
-            bedrooms: parseInt(row.bedrooms) || 1,
-            bathrooms: parseInt(row.bathrooms) || 1,
-            area: parseInt(row.area) || 500,
-            amenities: []
-          })
-        });
-        const result = await response.json();
-        results.push(result);
-      } catch (error) {
-        results.push({
-          predictedPrice: 150,
-          confidence: 0.5,
-          fallback: true
-        });
-      }
-    }
-
-    setCsvResults(results);
-    setIsProcessingCSV(false);
-  };
-
-  const downloadCSVResults = () => {
-    const csvContent = Papa.unparse({
-      fields: ['predictedPrice', 'confidence'],
-      data: csvResults
-    });
-    
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'predictions.csv';
-    a.click();
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-4xl font-bold text-gray-900 mb-8">Intelligent Price Prediction</h1>
-      
-      {/* Mode Selector */}
-      <div className="flex space-x-4 mb-8 border-b">
-        <button
-          onClick={() => setMode('manual')}
-          className={`pb-4 px-2 font-medium ${
-            mode === 'manual' 
-              ? 'border-b-2 border-indigo-600 text-indigo-600' 
-              : 'text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          Manual Features
-        </button>
-        <button
-          onClick={() => setMode('map')}
-          className={`pb-4 px-2 font-medium ${
-            mode === 'map' 
-              ? 'border-b-2 border-indigo-600 text-indigo-600' 
-              : 'text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          Map-Based
-        </button>
-        <button
-          onClick={() => setMode('csv')}
-          className={`pb-4 px-2 font-medium ${
-            mode === 'csv' 
-              ? 'border-b-2 border-indigo-600 text-indigo-600' 
-              : 'text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          CSV Batch
-        </button>
-      </div>
+    <div className="min-h-screen bg-background">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
+        {/* Header */}
+        <div className="mb-10 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-sm font-display font-600 mb-4">
+            <Sparkles className="w-4 h-4" />
+            AI-Powered Price Intelligence
+          </div>
+          <h1 className="font-display font-700 text-3xl sm:text-4xl text-brand-charcoal mb-3">
+            Smart Price Prediction
+          </h1>
+          <p className="text-muted-foreground max-w-lg mx-auto">
+            Enter your property details and our ML model will instantly predict the optimal nightly rate based on real market data.
+          </p>
+        </div>
 
-      {/* Manual Prediction Mode */}
-      {mode === 'manual' && (
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold mb-6">Manual Feature Prediction</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
-              <select
-                value={manualForm.country}
-                onChange={(e) => setManualForm({...manualForm, country: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="United States">United States</option>
-                <option value="Canada">Canada</option>
-                <option value="United Kingdom">United Kingdom</option>
-                <option value="Australia">Australia</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
-              <input
-                type="text"
-                value={manualForm.city}
-                onChange={(e) => setManualForm({...manualForm, city: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter city name"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Property Type</label>
-              <select
-                value={manualForm.propertyType}
-                onChange={(e) => setManualForm({...manualForm, propertyType: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="apartment">Apartment</option>
-                <option value="house">House</option>
-                <option value="condo">Condo</option>
-                <option value="studio">Studio</option>
-                <option value="villa">Villa</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Bedrooms</label>
-              <input
-                type="number"
-                min="0"
-                value={manualForm.bedrooms}
-                onChange={(e) => setManualForm({...manualForm, bedrooms: parseInt(e.target.value)})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Bathrooms</label>
-              <input
-                type="number"
-                min="0"
-                value={manualForm.bathrooms}
-                onChange={(e) => setManualForm({...manualForm, bathrooms: parseInt(e.target.value)})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Area (sqft)</label>
-              <input
-                type="number"
-                min="0"
-                value={manualForm.area}
-                onChange={(e) => setManualForm({...manualForm, area: parseInt(e.target.value)})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Furnishing</label>
-              <select
-                value={manualForm.furnishing}
-                onChange={(e) => setManualForm({...manualForm, furnishing: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="furnished">Furnished</option>
-                <option value="semi-furnished">Semi-Furnished</option>
-                <option value="unfurnished">Unfurnished</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Parking</label>
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={manualForm.parking}
-                  onChange={(e) => setManualForm({...manualForm, parking: e.target.checked})}
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                />
-                <span className="ml-2 text-sm text-gray-700">Parking Available</span>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+          {/* Form */}
+          <div className="border border-brand-border rounded-3xl p-6 sm:p-8 bg-white shadow-card">
+            <h2 className="font-display font-700 text-lg text-brand-charcoal mb-6 flex items-center gap-2">
+              <Home className="w-5 h-5 text-primary" />
+              Property Details
+            </h2>
+            <form onSubmit={handleManualSubmit} className="space-y-5">
+              {/* Location row */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-display font-600 text-brand-charcoal uppercase tracking-wide mb-1.5">
+                    Country
+                  </label>
+                  <input
+                    type="text"
+                    value={manualForm.country}
+                    onChange={(e) => setManualForm({ ...manualForm, country: e.target.value })}
+                    className="w-full px-4 py-3 border border-brand-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary text-brand-charcoal"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-display font-600 text-brand-charcoal uppercase tracking-wide mb-1.5">
+                    City *
+                  </label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <input
+                      type="text"
+                      required
+                      value={manualForm.city}
+                      onChange={(e) => setManualForm({ ...manualForm, city: e.target.value })}
+                      placeholder="e.g. New York"
+                      className="w-full pl-10 pr-4 py-3 border border-brand-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary text-brand-charcoal"
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Property Age (years)</label>
-              <input
-                type="number"
-                min="0"
-                value={manualForm.propertyAge}
-                onChange={(e) => setManualForm({...manualForm, propertyAge: parseInt(e.target.value)})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
+              {/* Property type */}
+              <div>
+                <label className="block text-xs font-display font-600 text-brand-charcoal uppercase tracking-wide mb-1.5">
+                  Property Type
+                </label>
+                <select
+                  value={manualForm.propertyType}
+                  onChange={(e) => setManualForm({ ...manualForm, propertyType: e.target.value })}
+                  className="w-full px-4 py-3 border border-brand-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary text-brand-charcoal bg-white"
+                >
+                  {PROPERTY_TYPES.map(t => (
+                    <option key={t} value={t.toLowerCase()}>{t}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Bedrooms / Bathrooms */}
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-display font-600 text-brand-charcoal uppercase tracking-wide mb-1.5 flex items-center gap-1">
+                    <Bed className="w-3 h-3" /> Beds
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={20}
+                    value={manualForm.bedrooms}
+                    onChange={(e) => setManualForm({ ...manualForm, bedrooms: parseInt(e.target.value) })}
+                    className="w-full px-4 py-3 border border-brand-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary text-brand-charcoal"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-display font-600 text-brand-charcoal uppercase tracking-wide mb-1.5 flex items-center gap-1">
+                    <Bath className="w-3 h-3" /> Baths
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={20}
+                    value={manualForm.bathrooms}
+                    onChange={(e) => setManualForm({ ...manualForm, bathrooms: parseInt(e.target.value) })}
+                    className="w-full px-4 py-3 border border-brand-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary text-brand-charcoal"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-display font-600 text-brand-charcoal uppercase tracking-wide mb-1.5 flex items-center gap-1">
+                    <Maximize className="w-3 h-3" /> Area (sqft)
+                  </label>
+                  <input
+                    type="number"
+                    min={100}
+                    value={manualForm.area}
+                    onChange={(e) => setManualForm({ ...manualForm, area: parseInt(e.target.value) })}
+                    className="w-full px-4 py-3 border border-brand-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary text-brand-charcoal"
+                  />
+                </div>
+              </div>
+
+              {/* Furnishing */}
+              <div>
+                <label className="block text-xs font-display font-600 text-brand-charcoal uppercase tracking-wide mb-1.5">
+                  Furnishing
+                </label>
+                <div className="flex gap-3">
+                  {FURNISHING_OPTIONS.map(opt => (
+                    <button
+                      key={opt}
+                      type="button"
+                      onClick={() => setManualForm({ ...manualForm, furnishing: opt })}
+                      className={`flex-1 py-2.5 text-sm rounded-xl border transition-all duration-150 font-medium capitalize ${
+                        manualForm.furnishing === opt
+                          ? 'bg-primary text-white border-primary'
+                          : 'border-brand-border text-brand-charcoal hover:border-brand-charcoal'
+                      }`}
+                    >
+                      {opt.replace('-', ' ')}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Parking + Age */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-display font-600 text-brand-charcoal uppercase tracking-wide mb-1.5">
+                    Property Age (years)
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={manualForm.propertyAge}
+                    onChange={(e) => setManualForm({ ...manualForm, propertyAge: parseInt(e.target.value) })}
+                    className="w-full px-4 py-3 border border-brand-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary text-brand-charcoal"
+                  />
+                </div>
+                <div className="flex flex-col justify-end">
+                  <label className="flex items-center gap-3 cursor-pointer p-3.5 border border-brand-border rounded-xl hover:border-brand-charcoal transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={manualForm.parking}
+                      onChange={(e) => setManualForm({ ...manualForm, parking: e.target.checked })}
+                      className="w-4 h-4 accent-primary"
+                    />
+                    <span className="text-sm font-medium text-brand-charcoal">Parking included</span>
+                  </label>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="btn-primary w-full py-4 text-base rounded-xl font-display font-600 flex items-center justify-center gap-2 disabled:opacity-70"
+              >
+                {isLoading ? (
+                  <><Loader2 className="w-5 h-5 animate-spin" /> Predicting Price...</>
+                ) : (
+                  <><TrendingUp className="w-5 h-5" /> Predict Price <ChevronRight className="w-4 h-4" /></>
+                )}
+              </button>
+            </form>
           </div>
 
-          <button
-            onClick={handleManualPrediction}
-            disabled={isLoading || !manualForm.city}
-            className="mt-6 px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
-          >
-            {isLoading ? 'Predicting...' : 'Get Price Prediction'}
-          </button>
-        </div>
-      )}
+          {/* Results */}
+          <div className="space-y-5">
+            {!prediction && !isLoading ? (
+              <div className="border border-dashed border-brand-border rounded-3xl flex flex-col items-center justify-center py-24 text-center">
+                <Sparkles className="w-14 h-14 text-muted-foreground/30 mb-4" />
+                <p className="font-display font-600 text-brand-charcoal mb-1">Ready to predict</p>
+                <p className="text-sm text-muted-foreground">Fill in the property details and click "Predict Price"</p>
+              </div>
+            ) : isLoading ? (
+              <div className="border border-brand-border rounded-3xl flex flex-col items-center justify-center py-24 text-center animate-fade-in">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                  <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                </div>
+                <p className="font-display font-600 text-brand-charcoal mb-1">Analyzing market data...</p>
+                <p className="text-sm text-muted-foreground">Our ML model is processing your property</p>
+              </div>
+            ) : prediction ? (
+              <div className="animate-fade-in space-y-4">
+                {/* Main price result */}
+                <div className="border border-brand-border rounded-3xl p-6 bg-white shadow-card text-center">
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest font-display font-600 mb-2">AI Predicted Price</p>
+                  <p className="font-display font-700 text-5xl text-primary mb-1">${prediction.predictedPrice}</p>
+                  <p className="text-muted-foreground text-sm">per night</p>
+                  {prediction.fallback && (
+                    <div className="mt-3 px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-xl text-xs text-yellow-700">
+                      ⚡ Estimated based on market data
+                    </div>
+                  )}
+                </div>
 
-      {/* Map-Based Prediction Mode */}
-      {mode === 'map' && (
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold mb-6">Map-Based Prediction</h2>
-          <p className="text-gray-600 mb-4">Click anywhere on the map to get price prediction for that location</p>
-          
-          <div className="h-96 rounded-lg overflow-hidden border">
-            <MapContainer
-              center={[40.7128, -74.0060]} // New York
-              zoom={12}
-              style={{ height: '100%', width: '100%' }}
-            >
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              />
-              <MapClickHandler />
-              {selectedLocation && (
-                <Marker position={[selectedLocation.lat, selectedLocation.lng] as LatLngExpression} />
-              )}
-            </MapContainer>
-          </div>
+                {/* Confidence bar */}
+                <div className="border border-brand-border rounded-2xl p-5 bg-white shadow-card">
+                  <div className="flex justify-between items-center mb-2">
+                    <p className="text-sm font-display font-600 text-brand-charcoal">Confidence</p>
+                    <span className={`font-display font-700 text-lg ${
+                      prediction.confidence > 0.8 ? 'text-green-600' :
+                      prediction.confidence > 0.6 ? 'text-yellow-600' : 'text-red-500'
+                    }`}>
+                      {(prediction.confidence * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-brand-surface rounded-full h-2.5">
+                    <div
+                      className={`h-2.5 rounded-full transition-all duration-700 ${
+                        prediction.confidence > 0.8 ? 'bg-green-500' :
+                        prediction.confidence > 0.6 ? 'bg-yellow-500' : 'bg-red-500'
+                      }`}
+                      style={{ width: `${prediction.confidence * 100}%` }}
+                    />
+                  </div>
+                </div>
 
-          {selectedLocation && (
-            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-              <p className="text-sm text-gray-600">
-                Selected Location: {selectedLocation.lat.toFixed(4)}, {selectedLocation.lng.toFixed(4)}
-              </p>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* CSV Batch Prediction Mode */}
-      {mode === 'csv' && (
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold mb-6">CSV Batch Prediction</h2>
-          
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Upload CSV File
-            </label>
-            <input
-              type="file"
-              accept=".csv"
-              onChange={handleCSVUpload}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            <p className="text-sm text-gray-500 mt-2">
-              CSV should include columns: city, bedrooms, bathrooms, area
-            </p>
-          </div>
-
-          {csvData.length > 0 && (
-            <div className="mb-6">
-              <h3 className="text-lg font-medium mb-3">Preview ({csvData.length} rows)</h3>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      {Object.keys(csvData[0]).map((key) => (
-                        <th key={key} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          {key}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {csvData.slice(0, 5).map((row, idx) => (
-                      <tr key={idx}>
-                        {Object.values(row).map((value, i) => (
-                          <td key={i} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {value}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                {csvData.length > 5 && (
-                  <p className="text-sm text-gray-500 mt-2">... and {csvData.length - 5} more rows</p>
+                {/* Charts */}
+                {showAnalytics && (
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="border border-brand-border rounded-2xl p-4 bg-white shadow-card">
+                        <PriceChart prediction={prediction} />
+                      </div>
+                      <div className="border border-brand-border rounded-2xl p-4 bg-white shadow-card">
+                        <ConfidenceChart prediction={prediction} />
+                      </div>
+                    </div>
+                    <div className="border border-brand-border rounded-2xl p-4 bg-white shadow-card">
+                      <PricePerSqFtChart prediction={prediction} area={manualForm.area} />
+                    </div>
+                  </>
                 )}
               </div>
-            </div>
-          )}
-
-          {csvData.length > 0 && (
-            <div className="flex space-x-4">
-              <button
-                onClick={processCSVPredictions}
-                disabled={isProcessingCSV}
-                className="px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
-              >
-                {isProcessingCSV ? 'Processing...' : 'Predict All Prices'}
-              </button>
-              
-              {csvResults.length > 0 && (
-                <button
-                  onClick={downloadCSVResults}
-                  className="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700"
-                >
-                  Download Results
-                </button>
-              )}
-            </div>
-          )}
-
-          {csvResults.length > 0 && (
-            <div className="mt-6">
-              <h3 className="text-lg font-medium mb-3">Prediction Results</h3>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Row
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Predicted Price
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Confidence
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {csvResults.slice(0, 5).map((result, idx) => (
-                      <tr key={idx}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {idx + 1}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          ${result.predictedPrice}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {(result.confidence * 100).toFixed(1)}%
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Prediction Results */}
-      {prediction && (
-        <div className="mt-8 bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold mb-4">Prediction Results</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div className="bg-indigo-50 rounded-lg p-4">
-              <h3 className="text-sm font-medium text-indigo-600 mb-2">Predicted Price</h3>
-              <p className="text-3xl font-bold text-indigo-900">${prediction.predictedPrice}</p>
-              <p className="text-sm text-indigo-600">per night</p>
-            </div>
-            
-            <div className="bg-green-50 rounded-lg p-4">
-              <h3 className="text-sm font-medium text-green-600 mb-2">Confidence Score</h3>
-              <p className="text-3xl font-bold text-green-900">{(prediction.confidence * 100).toFixed(1)}%</p>
-              <p className="text-sm text-green-600">reliability</p>
-            </div>
-            
-            <div className="bg-yellow-50 rounded-lg p-4">
-              <h3 className="text-sm font-medium text-yellow-600 mb-2">Price per SqFt</h3>
-              <p className="text-3xl font-bold text-yellow-900">
-                ${manualForm.area ? (prediction.predictedPrice / manualForm.area).toFixed(2) : 'N/A'}
-              </p>
-              <p className="text-sm text-yellow-600">efficiency metric</p>
-            </div>
+            ) : null}
           </div>
-
-          {/* Analytics Charts */}
-          {showAnalytics && (
-            <div className="space-y-6">
-              <PriceChart prediction={prediction} />
-              <ConfidenceChart prediction={prediction} />
-              <PricePerSqFtChart prediction={prediction} area={manualForm.area} />
-            </div>
-          )}
         </div>
-      )}
+      </div>
+
+      <Footer />
     </div>
   );
 };

@@ -3,7 +3,7 @@ import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, Cart
 interface PredictionResult {
   predictedPrice: number;
   confidence: number;
-  features?: any;
+  features?: Record<string, unknown>;
 }
 
 interface PriceChartProps {
@@ -19,15 +19,18 @@ export const PriceChart: React.FC<PriceChartProps> = ({ prediction }) => {
   ];
 
   return (
-    <div className="bg-white rounded-lg p-4">
-      <h3 className="text-lg font-semibold mb-4">Price Breakdown</h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip formatter={(value: any) => [`$${Number(value).toFixed(2)}`, '']} />
-          <Bar dataKey="value" fill="#6366f1" />
+    <div>
+      <h3 className="font-display font-600 text-sm text-brand-charcoal mb-3">Price Breakdown</h3>
+      <ResponsiveContainer width="100%" height={200}>
+        <BarChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#DDDDDD" />
+          <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#717171' }} />
+          <YAxis tick={{ fontSize: 10, fill: '#717171' }} />
+          <Tooltip
+            formatter={(value) => [`$${Number(value).toFixed(2)}`, '']}
+            contentStyle={{ border: '1px solid #DDDDDD', borderRadius: 8, fontSize: 12 }}
+          />
+          <Bar dataKey="value" fill="#FF385C" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -43,21 +46,20 @@ export const ConfidenceChart: React.FC<ConfidenceChartProps> = ({ prediction }) 
     { name: 'Confidence', value: prediction.confidence * 100 },
     { name: 'Uncertainty', value: (1 - prediction.confidence) * 100 },
   ];
-
-  const COLORS = ['#10b981', '#ef4444'];
+  const COLORS = ['#FF385C', '#DDDDDD'];
 
   return (
-    <div className="bg-white rounded-lg p-4">
-      <h3 className="text-lg font-semibold mb-4">Confidence Analysis</h3>
-      <ResponsiveContainer width="100%" height={300}>
+    <div>
+      <h3 className="font-display font-600 text-sm text-brand-charcoal mb-3">Confidence Analysis</h3>
+      <ResponsiveContainer width="100%" height={200}>
         <PieChart>
           <Pie
             data={data}
             cx="50%"
             cy="50%"
+            label={({ name, value }: { name: string; value: number }) => `${name}: ${value.toFixed(1)}%`}
             labelLine={false}
-            label={({ name, value }) => `${name}: ${value.toFixed(1)}%`}
-            outerRadius={80}
+            outerRadius={70}
             fill="#8884d8"
             dataKey="value"
           >
@@ -65,7 +67,11 @@ export const ConfidenceChart: React.FC<ConfidenceChartProps> = ({ prediction }) 
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>
-          <Tooltip />
+          <Tooltip
+            formatter={(value: number) => [`${value.toFixed(1)}%`]}
+            contentStyle={{ border: '1px solid #DDDDDD', borderRadius: 8, fontSize: 12 }}
+          />
+          <Legend wrapperStyle={{ fontSize: 11 }} />
         </PieChart>
       </ResponsiveContainer>
     </div>
@@ -79,32 +85,32 @@ interface PricePerSqFtChartProps {
 
 export const PricePerSqFtChart: React.FC<PricePerSqFtChartProps> = ({ prediction, area }) => {
   const pricePerSqFt = area ? prediction.predictedPrice / area : 0;
-  
+
   const data = [
-    { metric: 'Current Property', value: pricePerSqFt },
-    { metric: 'Market Average', value: 1.2 },
-    { metric: 'Premium Properties', value: 2.5 },
-    { metric: 'Budget Properties', value: 0.8 },
+    { metric: 'This Property', value: pricePerSqFt },
+    { metric: 'Market Avg', value: 1.2 },
+    { metric: 'Premium', value: 2.5 },
+    { metric: 'Budget', value: 0.8 },
   ];
 
   return (
-    <div className="bg-white rounded-lg p-4">
-      <h3 className="text-lg font-semibold mb-4">Price per Square Foot Comparison</h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="metric" />
-          <YAxis />
-          <Tooltip formatter={(value: any) => [`$${Number(value).toFixed(2)}`, 'per sqft']} />
-          <Legend />
-          <Line 
-            type="monotone" 
-            dataKey="value" 
-            stroke="#6366f1" 
-            strokeWidth={2}
-            dot={{ fill: '#6366f1' }}
+    <div>
+      <h3 className="font-display font-600 text-sm text-brand-charcoal mb-3">Price per Square Foot Comparison</h3>
+      <ResponsiveContainer width="100%" height={200}>
+        <BarChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#DDDDDD" />
+          <XAxis dataKey="metric" tick={{ fontSize: 10, fill: '#717171' }} />
+          <YAxis tick={{ fontSize: 10, fill: '#717171' }} />
+          <Tooltip
+            formatter={(value) => [`$${Number(value).toFixed(2)}`, 'per sqft']}
+            contentStyle={{ border: '1px solid #DDDDDD', borderRadius: 8, fontSize: 12 }}
           />
-        </LineChart>
+          <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={index === 0 ? '#FF385C' : '#DDDDDD'} />
+            ))}
+          </Bar>
+        </BarChart>
       </ResponsiveContainer>
     </div>
   );
