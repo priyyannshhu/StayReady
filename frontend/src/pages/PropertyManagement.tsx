@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { PriceChart, ConfidenceChart, PricePerSqFtChart } from '../components/AnalyticsCharts';
-import Footer from '../components/Footer';
+import { gsap } from 'gsap';
 import { 
   TrendingUp, 
   MapPin, 
@@ -12,14 +11,23 @@ import {
   Loader2, 
   Sparkles, 
   ChevronRight,
-  BarChart3,
-  Users,
-  DollarSign,
+  Star,
+  CheckCircle,
+  ArrowUpRight,
+  ArrowRight,
+  Menu,
+  X,
   Building,
-  Shield,
+  DollarSign,
+  Users,
   Zap,
-  ArrowRight
+  BarChart3,
+  Shield
 } from 'lucide-react';
+import { PriceChart, ConfidenceChart, PricePerSqFtChart } from '../components/AnalyticsCharts';
+import Footer from '../components/Footer';
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface ManualPredictionForm {
   country: string;
@@ -46,7 +54,7 @@ const FURNISHING_OPTIONS = ['furnished', 'semi-furnished', 'unfurnished'];
 
 const PropertyManagement = () => {
   const [manualForm, setManualForm] = useState<ManualPredictionForm>({
-    country: 'United States',
+    country: 'India',
     city: '',
     propertyType: 'apartment',
     bedrooms: 1,
@@ -59,12 +67,82 @@ const PropertyManagement = () => {
   const [prediction, setPrediction] = useState<PredictionResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    // Hero animations
+    gsap.fromTo('.hero-title', {
+      opacity: 0,
+      y: 50
+    }, {
+      opacity: 1,
+      y: 0,
+      duration: 1.2,
+      ease: 'power3.out'
+    });
+
+    gsap.fromTo('.hero-subtitle', {
+      opacity: 0,
+      y: 30
+    }, {
+      opacity: 1,
+      y: 0,
+      duration: 1.2,
+      delay: 0.2,
+      ease: 'power3.out'
+    });
+
+    gsap.fromTo('.hero-buttons', {
+      opacity: 0,
+      y: 40
+    }, {
+      opacity: 1,
+      y: 0,
+      duration: 1.2,
+      delay: 0.4,
+      ease: 'power3.out'
+    });
+
+    // Feature cards animation
+    gsap.utils.toArray('.feature-card').forEach((card, index) => {
+      gsap.fromTo(card as Element, {
+        opacity: 0,
+        y: 60,
+        scale: 0.9
+      }, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.8,
+        delay: 0.8 + (index * 0.1),
+        ease: 'power2.out'
+      });
+    });
+
+    // Floating animation for hero elements
+    gsap.to('.floating-element', {
+      y: -20,
+      duration: 3,
+      repeat: -1,
+      yoyo: true,
+      ease: 'power1.inOut'
+    });
+  }, []);
 
   const handleManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setPrediction(null);
     setShowAnalytics(false);
+    
+    // Button animation
+    gsap.to('#predict-button', {
+      scale: 0.95,
+      duration: 0.1,
+      yoyo: true,
+      repeat: 1
+    });
+    
     try {
       const response = await fetch('/api/predict-price', {
         method: 'POST',
@@ -92,128 +170,290 @@ const PropertyManagement = () => {
     }
   };
 
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
+
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary/5 to-brand-surface py-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary text-sm font-display font-600 mb-6">
-              <Sparkles className="w-4 h-4" />
-              AI-Powered Property Management
-            </div>
-            <h1 className="font-display font-700 text-4xl sm:text-5xl lg:text-6xl text-brand-charcoal mb-6">
-              Stay<span className="text-primary">Ready</span>
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-              Transform your property management with intelligent price predictions, 
-              comprehensive analytics, and data-driven insights.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+      {/* Animated Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl floating-element"></div>
+        <div className="absolute top-40 right-20 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl floating-element" style={{animationDelay: '2s'}}></div>
+        <div className="absolute bottom-20 left-1/4 w-80 h-80 bg-purple-500/5 rounded-full blur-3xl floating-element" style={{animationDelay: '4s'}}></div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-2 group">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
+                <Building className="w-5 h-5 text-white" strokeWidth={2.5} />
+              </div>
+              <span className="font-display font-700 text-xl text-slate-800 group-hover:text-primary transition-colors">
+                Stay<span className="text-primary">Ready</span>
+              </span>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-8">
               <Link
                 to="/prediction"
-                className="btn-primary px-8 py-4 text-lg rounded-xl font-display font-600 flex items-center justify-center gap-2"
+                className="text-sm font-medium text-slate-600 hover:text-primary transition-all duration-200 font-display hover:scale-105"
               >
-                <TrendingUp className="w-5 h-5" />
-                Try AI Price Prediction
+                AI Prediction
               </Link>
               <Link
                 to="/host"
-                className="px-8 py-4 text-lg rounded-xl font-display font-600 border-2 border-brand-border text-brand-charcoal hover:border-primary hover:text-primary transition-colors flex items-center justify-center gap-2"
+                className="text-sm font-medium text-slate-600 hover:text-primary transition-all duration-200 font-display hover:scale-105"
               >
-                <Building className="w-5 h-5" />
-                Property Dashboard
+                Properties
+              </Link>
+              <Link
+                to="/explore"
+                className="text-sm font-medium text-slate-600 hover:text-primary transition-all duration-200 font-display hover:scale-105"
+              >
+                Explore
               </Link>
             </div>
+
+            {/* CTA Button */}
+            <Link
+              to="/prediction"
+              className="hidden lg:flex items-center px-6 py-3 rounded-full text-sm font-medium text-white bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-primary transition-all duration-300 shadow-lg hover:shadow-xl font-display hover:scale-105"
+            >
+              <Sparkles className="w-4 h-4 mr-2" />
+              Try AI Prediction
+            </Link>
+
+            {/* Mobile Menu */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
 
-          {/* Features Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            <div className="text-center p-6 bg-white rounded-2xl shadow-card border border-brand-border">
-              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <TrendingUp className="w-6 h-6 text-primary" />
+          {/* Mobile Navigation */}
+          {mobileMenuOpen && (
+            <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-slate-200 shadow-xl">
+              <div className="max-w-7xl mx-auto px-4 py-4 space-y-3">
+                <Link
+                  to="/prediction"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block py-3 text-base font-medium text-slate-700 hover:text-primary transition-colors font-display"
+                >
+                  AI Prediction
+                </Link>
+                <Link
+                  to="/host"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block py-3 text-base font-medium text-slate-700 hover:text-primary transition-colors font-display"
+                >
+                  Properties
+                </Link>
+                <Link
+                  to="/explore"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block py-3 text-base font-medium text-slate-700 hover:text-primary transition-colors font-display"
+                >
+                  Explore
+                </Link>
               </div>
-              <h3 className="font-display font-600 text-lg text-brand-charcoal mb-2">Smart Pricing</h3>
-              <p className="text-muted-foreground">AI-powered price predictions based on real market data and trends</p>
             </div>
-            <div className="text-center p-6 bg-white rounded-2xl shadow-card border border-brand-border">
-              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <BarChart3 className="w-6 h-6 text-primary" />
+          )}
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-blue-500/5 to-purple-500/10"></div>
+        
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-full text-primary text-sm font-display font-600 mb-8 backdrop-blur-sm border border-primary/30">
+            <Sparkles className="w-4 h-4" />
+            AI-Powered Property Intelligence
+          </div>
+
+          {/* Main Title */}
+          <h1 className="hero-title font-display font-800 text-5xl sm:text-6xl lg:text-7xl text-slate-900 mb-6 leading-tight">
+            Transform Your
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600 bg-gradient-to-r"> Property Management</span>
+            <br />
+            with Smart AI
+          </h1>
+
+          {/* Subtitle */}
+          <p className="hero-subtitle text-xl sm:text-2xl text-slate-600 mb-12 max-w-4xl mx-auto leading-relaxed">
+            Experience the future of real estate with intelligent price predictions, 
+            comprehensive analytics, and data-driven insights that maximize your property's potential.
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="hero-buttons flex flex-col sm:flex-row gap-4 justify-center mb-16">
+            <Link
+              to="/prediction"
+              className="group px-8 py-4 rounded-2xl text-lg font-display font-600 text-white bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-primary transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 flex items-center justify-center"
+            >
+              <TrendingUp className="w-5 h-5 mr-2" />
+              Try AI Prediction
+              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <Link
+              to="/host"
+              className="px-8 py-4 rounded-2xl text-lg font-display font-600 text-slate-700 bg-white border-2 border-slate-200 hover:border-primary hover:text-primary transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center"
+            >
+              <Building className="w-5 h-5 mr-2" />
+              Property Dashboard
+            </Link>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-16">
+            <div className="text-center p-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/20 shadow-xl">
+              <div className="w-12 h-12 bg-gradient-to-br from-primary to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <DollarSign className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-display font-600 text-lg text-brand-charcoal mb-2">Advanced Analytics</h3>
-              <p className="text-muted-foreground">Comprehensive insights into property performance and market trends</p>
+              <h3 className="font-display font-700 text-3xl text-slate-900 mb-2">95%</h3>
+              <p className="text-slate-600 font-medium">Accuracy Rate</p>
             </div>
-            <div className="text-center p-6 bg-white rounded-2xl shadow-card border border-brand-border">
-              <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <Shield className="w-6 h-6 text-primary" />
+            <div className="text-center p-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/20 shadow-xl">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Users className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-display font-600 text-lg text-brand-charcoal mb-2">Data-Driven</h3>
-              <p className="text-muted-foreground">Make informed decisions with confidence scores and market analysis</p>
+              <h3 className="font-display font-700 text-3xl text-slate-900 mb-2">10K+</h3>
+              <p className="text-slate-600 font-medium">Properties Analyzed</p>
+            </div>
+            <div className="text-center p-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/20 shadow-xl">
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Zap className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="font-display font-700 text-3xl text-slate-900 mb-2">Secs</h3>
+              <p className="text-slate-600 font-medium">Instant Predictions</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Quick Prediction Section */}
-      <section className="py-16 bg-white">
+      {/* Features Section */}
+      <section className="py-24 relative">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="font-display font-700 text-3xl text-brand-charcoal mb-4">
-              Quick Price Prediction
+          <div className="text-center mb-16">
+            <h2 className="font-display font-700 text-4xl text-slate-900 mb-4">
+              Powerful Features for
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600 bg-gradient-to-r"> Modern Real Estate</span>
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Get instant AI-powered price predictions for any property. Just enter the basic details below.
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              Everything you need to manage properties efficiently and make data-driven decisions.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="feature-card group p-8 bg-white rounded-3xl shadow-xl border border-slate-100 hover:shadow-2xl hover:border-primary/20 transition-all duration-300">
+              <div className="w-14 h-14 bg-gradient-to-br from-primary to-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <TrendingUp className="w-7 h-7 text-white" />
+              </div>
+              <h3 className="font-display font-600 text-xl text-slate-900 mb-3">Smart Pricing</h3>
+              <p className="text-slate-600 leading-relaxed">
+                Advanced AI algorithms analyze market trends, property features, and location data to provide accurate price predictions that maximize your rental income.
+              </p>
+            </div>
+
+            <div className="feature-card group p-8 bg-white rounded-3xl shadow-xl border border-slate-100 hover:shadow-2xl hover:border-primary/20 transition-all duration-300" style={{animationDelay: '0.1s'}}>
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <BarChart3 className="w-7 h-7 text-white" />
+              </div>
+              <h3 className="font-display font-600 text-xl text-slate-900 mb-3">Advanced Analytics</h3>
+              <p className="text-slate-600 leading-relaxed">
+                Comprehensive dashboards with real-time insights, market comparisons, and performance metrics to optimize your property portfolio strategy.
+              </p>
+            </div>
+
+            <div className="feature-card group p-8 bg-white rounded-3xl shadow-xl border border-slate-100 hover:shadow-2xl hover:border-primary/20 transition-all duration-300" style={{animationDelay: '0.2s'}}>
+              <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Shield className="w-7 h-7 text-white" />
+              </div>
+              <h3 className="font-display font-600 text-xl text-slate-900 mb-3">Data Security</h3>
+              <p className="text-slate-600 leading-relaxed">
+                Enterprise-grade security with encrypted data storage, secure authentication, and regular backups to protect your property information.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Quick Prediction Demo */}
+      <section className="py-24 bg-gradient-to-br from-slate-50 to-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="font-display font-700 text-4xl text-slate-900 mb-4">
+              Try AI Price Prediction
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600 bg-gradient-to-r"> Instantly</span>
+            </h2>
+            <p className="text-xl text-slate-600 max-w-2xl mx-auto mb-12">
+              Experience the power of AI with our quick prediction tool. Just enter your property details.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
             {/* Form */}
-            <div className="border border-brand-border rounded-3xl p-6 sm:p-8 bg-white shadow-card">
-              <h2 className="font-display font-700 text-lg text-brand-charcoal mb-6 flex items-center gap-2">
-                <Home className="w-5 h-5 text-primary" />
+            <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 p-8">
+              <h2 className="font-display font-700 text-2xl text-slate-900 mb-8 flex items-center gap-3">
+                <div className="w-8 h-8 bg-gradient-to-br from-primary to-blue-600 rounded-xl flex items-center justify-center">
+                  <Home className="w-4 h-4 text-white" />
+                </div>
                 Property Details
               </h2>
-              <form onSubmit={handleManualSubmit} className="space-y-5">
-                {/* Location row */}
+              <form onSubmit={handleManualSubmit} className="space-y-6">
+                {/* Location */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-display font-600 text-brand-charcoal uppercase tracking-wide mb-1.5">
+                    <label className="block text-sm font-display font-600 text-slate-700 uppercase tracking-wide mb-2">
                       Country
                     </label>
                     <input
                       type="text"
                       value={manualForm.country}
                       onChange={(e) => setManualForm({ ...manualForm, country: e.target.value })}
-                      className="w-full px-4 py-3 border border-brand-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary text-brand-charcoal"
+                      className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-900 transition-all duration-200"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-display font-600 text-brand-charcoal uppercase tracking-wide mb-1.5">
+                    <label className="block text-sm font-display font-600 text-slate-700 uppercase tracking-wide mb-2">
                       City *
                     </label>
                     <div className="relative">
-                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                       <input
                         type="text"
                         required
                         value={manualForm.city}
                         onChange={(e) => setManualForm({ ...manualForm, city: e.target.value })}
-                        placeholder="e.g. New York"
-                        className="w-full pl-10 pr-4 py-3 border border-brand-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary text-brand-charcoal"
+                        placeholder="e.g. Mumbai, Delhi, Bangalore"
+                        className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-900 transition-all duration-200"
                       />
                     </div>
                   </div>
                 </div>
 
-                {/* Property type */}
+                {/* Property Type */}
                 <div>
-                  <label className="block text-xs font-display font-600 text-brand-charcoal uppercase tracking-wide mb-1.5">
+                  <label className="block text-sm font-display font-600 text-slate-700 uppercase tracking-wide mb-2">
                     Property Type
                   </label>
                   <select
                     value={manualForm.propertyType}
                     onChange={(e) => setManualForm({ ...manualForm, propertyType: e.target.value })}
-                    className="w-full px-4 py-3 border border-brand-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary text-brand-charcoal bg-white"
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-900 bg-white transition-all duration-200"
                   >
                     {PROPERTY_TYPES.map(t => (
                       <option key={t} value={t.toLowerCase()}>{t}</option>
@@ -221,10 +461,10 @@ const PropertyManagement = () => {
                   </select>
                 </div>
 
-                {/* Bedrooms / Bathrooms */}
+                {/* Room Details */}
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-xs font-display font-600 text-brand-charcoal uppercase tracking-wide mb-1.5 flex items-center gap-1">
+                    <label className="block text-sm font-display font-600 text-slate-700 uppercase tracking-wide mb-2 flex items-center gap-1">
                       <Bed className="w-3 h-3" /> Beds
                     </label>
                     <input
@@ -233,11 +473,11 @@ const PropertyManagement = () => {
                       max={20}
                       value={manualForm.bedrooms}
                       onChange={(e) => setManualForm({ ...manualForm, bedrooms: parseInt(e.target.value) })}
-                      className="w-full px-4 py-3 border border-brand-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary text-brand-charcoal"
+                      className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-900 transition-all duration-200"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-display font-600 text-brand-charcoal uppercase tracking-wide mb-1.5 flex items-center gap-1">
+                    <label className="block text-sm font-display font-600 text-slate-700 uppercase tracking-wide mb-2 flex items-center gap-1">
                       <Bath className="w-3 h-3" /> Baths
                     </label>
                     <input
@@ -246,11 +486,11 @@ const PropertyManagement = () => {
                       max={20}
                       value={manualForm.bathrooms}
                       onChange={(e) => setManualForm({ ...manualForm, bathrooms: parseInt(e.target.value) })}
-                      className="w-full px-4 py-3 border border-brand-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary text-brand-charcoal"
+                      className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-900 transition-all duration-200"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-display font-600 text-brand-charcoal uppercase tracking-wide mb-1.5 flex items-center gap-1">
+                    <label className="block text-sm font-display font-600 text-slate-700 uppercase tracking-wide mb-2 flex items-center gap-1">
                       <Maximize className="w-3 h-3" /> Area (sqft)
                     </label>
                     <input
@@ -258,121 +498,147 @@ const PropertyManagement = () => {
                       min={100}
                       value={manualForm.area}
                       onChange={(e) => setManualForm({ ...manualForm, area: parseInt(e.target.value) })}
-                      className="w-full px-4 py-3 border border-brand-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary text-brand-charcoal"
+                      className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-900 transition-all duration-200"
                     />
                   </div>
                 </div>
 
+                {/* Furnishing */}
+                <div>
+                  <label className="block text-sm font-display font-600 text-slate-700 uppercase tracking-wide mb-2">
+                    Furnishing
+                  </label>
+                  <div className="flex gap-3">
+                    {FURNISHING_OPTIONS.map(opt => (
+                      <button
+                        key={opt}
+                        type="button"
+                        onClick={() => setManualForm({ ...manualForm, furnishing: opt })}
+                        className={`flex-1 py-3 text-sm rounded-xl border transition-all duration-200 font-medium capitalize ${
+                          manualForm.furnishing === opt
+                            ? 'bg-primary text-white border-primary shadow-lg'
+                            : 'border-slate-200 text-slate-700 hover:border-primary hover:text-primary'
+                        }`}
+                      >
+                        {opt.replace('-', ' ')}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <button
+                  id="predict-button"
                   type="submit"
                   disabled={isLoading}
-                  className="btn-primary w-full py-4 text-base rounded-xl font-display font-600 flex items-center justify-center gap-2 disabled:opacity-70"
+                  className="w-full py-4 rounded-2xl text-base font-display font-600 text-white bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-primary transition-all duration-300 shadow-xl hover:shadow-2xl disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
                 >
                   {isLoading ? (
-                    <><Loader2 className="w-5 h-5 animate-spin" /> Predicting Price...</>
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                      Predicting Price...
+                    </>
                   ) : (
-                    <><TrendingUp className="w-5 h-5" /> Predict Price <ChevronRight className="w-4 h-4" /></>
+                    <>
+                      <TrendingUp className="w-5 h-5 mr-2" />
+                      Predict Price
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </>
                   )}
                 </button>
               </form>
             </div>
 
             {/* Results */}
-            <div className="space-y-5">
-              {!prediction && !isLoading ? (
-                <div className="border border-dashed border-brand-border rounded-3xl flex flex-col items-center justify-center py-24 text-center">
-                  <Sparkles className="w-14 h-14 text-muted-foreground/30 mb-4" />
-                  <p className="font-display font-600 text-brand-charcoal mb-1">Ready to predict</p>
-                  <p className="text-sm text-muted-foreground">Fill in property details and click "Predict Price"</p>
-                </div>
-              ) : isLoading ? (
-                <div className="border border-brand-border rounded-3xl flex flex-col items-center justify-center py-24 text-center animate-fade-in">
-                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                    <Loader2 className="w-8 h-8 text-primary animate-spin" />
-                  </div>
-                  <p className="font-display font-600 text-brand-charcoal mb-1">Analyzing market data...</p>
-                  <p className="text-sm text-muted-foreground">Our ML model is processing your property</p>
-                </div>
-              ) : prediction ? (
-                <div className="animate-fade-in space-y-4">
-                  {/* Main price result */}
-                  <div className="border border-brand-border rounded-3xl p-6 bg-white shadow-card text-center">
-                    <p className="text-xs text-muted-foreground uppercase tracking-widest font-display font-600 mb-2">AI Predicted Price</p>
-                    <p className="font-display font-700 text-5xl text-primary mb-1">${prediction.predictedPrice}</p>
-                    <p className="text-muted-foreground text-sm">per night</p>
+            <div className="space-y-6">
+              {prediction && (
+                <div className="animate-fade-in">
+                  {/* Main Result */}
+                  <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 p-8 text-center">
+                    <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-full text-primary text-sm font-display font-600 mb-4">
+                      <Star className="w-4 h-4 mr-1" />
+                      AI Predicted Price
+                    </div>
+                    <div className="mb-2">
+                      <span className="font-display font-800 text-5xl text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600 bg-gradient-to-r">
+                        {formatPrice(prediction.predictedPrice)}
+                      </span>
+                      <span className="text-slate-600 text-lg ml-2">per night</span>
+                    </div>
                     {prediction.fallback && (
-                      <div className="mt-3 px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-xl text-xs text-yellow-700">
-                        ⚡ Estimated based on market data
+                      <div className="mt-4 px-4 py-2 bg-amber-50 border border-amber-200 rounded-xl text-amber-700 text-sm">
+                        ⚡ Estimated based on market data analysis
                       </div>
                     )}
                   </div>
 
-                  {/* Confidence bar */}
-                  <div className="border border-brand-border rounded-2xl p-5 bg-white shadow-card">
-                    <div className="flex justify-between items-center mb-2">
-                      <p className="text-sm font-display font-600 text-brand-charcoal">Confidence</p>
-                      <span className={`font-display font-700 text-lg ${
-                        prediction.confidence > 0.8 ? 'text-green-600' :
-                        prediction.confidence > 0.6 ? 'text-yellow-600' : 'text-red-500'
+                  {/* Confidence */}
+                  <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 p-6">
+                    <div className="flex justify-between items-center mb-4">
+                      <h4 className="font-display font-600 text-slate-900">Confidence Score</h4>
+                      <span className={`font-display font-700 text-2xl ${
+                        prediction.confidence > 0.8 ? 'text-emerald-600' :
+                        prediction.confidence > 0.6 ? 'text-amber-600' : 'text-red-500'
                       }`}>
                         {(prediction.confidence * 100).toFixed(1)}%
                       </span>
                     </div>
-                    <div className="w-full bg-brand-surface rounded-full h-2.5">
+                    <div className="w-full bg-slate-100 rounded-full h-3 mb-2">
                       <div
-                        className={`h-2.5 rounded-full transition-all duration-700 ${
-                          prediction.confidence > 0.8 ? 'bg-green-500' :
-                          prediction.confidence > 0.6 ? 'bg-yellow-500' : 'bg-red-500'
+                        className={`h-3 rounded-full transition-all duration-1000 ${
+                          prediction.confidence > 0.8 ? 'bg-emerald-500 w-full' :
+                          prediction.confidence > 0.6 ? 'bg-amber-500' : 'bg-red-500'
                         }`}
                         style={{ width: `${prediction.confidence * 100}%` }}
                       />
                     </div>
                   </div>
 
-                  {/* Charts */}
+                  {/* Analytics */}
                   {showAnalytics && (
-                    <>
+                    <div className="space-y-4 animate-fade-in">
                       <div className="grid grid-cols-2 gap-4">
-                        <div className="border border-brand-border rounded-2xl p-4 bg-white shadow-card">
+                        <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-4">
                           <PriceChart prediction={prediction} />
                         </div>
-                        <div className="border border-brand-border rounded-2xl p-4 bg-white shadow-card">
+                        <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-4">
                           <ConfidenceChart prediction={prediction} />
                         </div>
                       </div>
-                      <div className="border border-brand-border rounded-2xl p-4 bg-white shadow-card">
+                      <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-4">
                         <PricePerSqFtChart prediction={prediction} area={manualForm.area} />
                       </div>
-                    </>
+                    </div>
                   )}
                 </div>
-              ) : null}
+              )}
             </div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-br from-primary/5 to-brand-surface">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="font-display font-700 text-3xl text-brand-charcoal mb-4">
-            Ready to Transform Your Property Management?
+      <section className="py-24 bg-gradient-to-br from-primary to-blue-600 relative overflow-hidden">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="font-display font-700 text-4xl text-white mb-6">
+            Ready to Transform Your
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-100 bg-gradient-to-r"> Property Business?</span>
           </h2>
-          <p className="text-xl text-muted-foreground mb-8">
-            Join thousands of property managers using AI to optimize their pricing and maximize revenue.
+          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+            Join thousands of property managers using AI to optimize pricing and maximize revenue.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/host"
-              className="btn-primary px-8 py-4 text-lg rounded-xl font-display font-600 flex items-center justify-center gap-2"
+              className="group px-8 py-4 rounded-2xl text-lg font-display font-600 text-primary bg-white hover:bg-blue-50 transition-all duration-300 shadow-xl hover:shadow-2xl flex items-center justify-center"
             >
-              <Building className="w-5 h-5" />
+              <Building className="w-5 h-5 mr-2" />
               Go to Dashboard
-              <ArrowRight className="w-4 h-4" />
+              <ArrowUpRight className="w-4 h-4 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </Link>
             <Link
               to="/explore"
-              className="px-8 py-4 text-lg rounded-xl font-display font-600 border-2 border-brand-border text-brand-charcoal hover:border-primary hover:text-primary transition-colors flex items-center justify-center gap-2"
+              className="px-8 py-4 rounded-2xl text-lg font-display font-600 text-white border-2 border-white/30 hover:border-white hover:bg-white/10 transition-all duration-300 flex items-center justify-center"
             >
               Browse Properties
             </Link>

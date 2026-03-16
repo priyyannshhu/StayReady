@@ -13,7 +13,8 @@ import {
   Sparkles, 
   ChevronRight,
   Star,
-  ArrowRight
+  ArrowRight,
+  Building
 } from 'lucide-react';
 
 interface ManualPredictionForm {
@@ -311,7 +312,7 @@ const Prediction = () => {
 
           {/* Results */}
           <div className="prediction-results space-y-6">
-            {prediction && (
+            {!prediction && !isLoading && (
               <div className="animate-fade-in">
                 {/* Main Result */}
                 <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 p-8 text-center">
@@ -371,8 +372,8 @@ const Prediction = () => {
                   </div>
                 )}
               </div>
-            )}
-          </div>
+            </div>
+          ) : null}
         </div>
       </div>
 

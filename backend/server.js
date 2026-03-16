@@ -4,7 +4,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
@@ -529,6 +529,148 @@ app.post('/api/users', async (req, res) => {
     const user = new User(req.body);
     await user.save();
     res.status(201).json(user);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// POST /api/auth/register - User registration
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+    
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: 'User already exists with this email' });
+    }
+    
+    const user = new User({ name, email, password });
+    await user.save();
+    
+    // Generate JWT token (simplified for demo)
+    const token = 'demo_token_' + Date.now();
+    
+    res.status(201).json({
+      message: 'User registered successfully',
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email
+      }
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// POST /api/auth/login - User login
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ error: 'Invalid email or password' });
+    }
+    
+    // Simple password check (in production, use bcrypt)
+    if (user.password !== password) {
+      return res.status(400).json({ error: 'Invalid email or password' });
+    }
+    
+    // Generate JWT token (simplified for demo)
+    const token = 'demo_token_' + Date.now();
+    
+    res.json({
+      message: 'Login successful',
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email
+      }
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// GET /api/properties/user - Get user's properties
+app.get('/api/properties/user', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    
+    // Simple token validation (in production, use JWT verification)
+    if (!token || !token.startsWith('demo_token_')) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    // For demo, return all properties for the user
+    // In production, filter by user ID
+    const properties = await Property.find();
+    res.json({ properties });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST /api/properties - Add new property
+app.post('/api/properties', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    
+    if (!token || !token.startsWith('demo_token_')) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    const property = new Property(req.body);
+    property.userId = 'demo_user'; // In production, get from token
+    await property.save();
+    
+    res.status(201).json(property);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// PUT /api/properties/:id - Update property
+app.put('/api/properties/:id', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    
+    if (!token || !token.startsWith('demo_token_')) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    const property = await Property.findByIdAndUpdate(req.params.id, req.body);
+    if (!property) {
+      return res.status(404).json({ error: 'Property not found' });
+    }
+    
+    res.json(property);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// DELETE /api/properties/:id - Delete property
+app.delete('/api/properties/:id', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    
+    if (!token || !token.startsWith('demo_token_')) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    const property = await Property.findByIdAndDelete(req.params.id);
+    if (!property) {
+      return res.status(404).json({ error: 'Property not found' });
+    }
+    
+    res.json({ message: 'Property deleted successfully' });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

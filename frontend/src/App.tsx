@@ -5,6 +5,8 @@ import PropertyDetail from './pages/PropertyDetail';
 import BookingConfirmation from './pages/BookingConfirmation';
 import Prediction from './pages/Prediction';
 import PropertyManagement from './pages/PropertyManagement';
+import Auth from './pages/Auth';
+import Dashboard from './pages/Dashboard';
 import Footer from './components/Footer';
 import Navbar from './components/Navbar';
 
@@ -17,6 +19,8 @@ function App() {
           <Route path="/" element={<PropertyManagement />} />
           <Route path="/prediction" element={<Prediction />} />
           <Route path="/management" element={<PropertyManagement />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/host" element={<HostDashboard />} />
           <Route path="/property/:id" element={<PropertyDetail />} />
