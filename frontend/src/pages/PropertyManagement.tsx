@@ -192,7 +192,7 @@ const PropertyManagement = () => {
         
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-blue/20 to-brand-teal/20 rounded-full text-brand-blue text-sm font-display font-600 mb-8 backdrop-blur-sm border border-brand-blue/30">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-brand-blue/10 rounded-full text-brand-blue text-sm font-display font-600 mb-8 backdrop-blur-sm border border-brand-blue/20">
             <Sparkles className="w-4 h-4" />
             AI-Powered Property Intelligence
           </div>
@@ -200,7 +200,7 @@ const PropertyManagement = () => {
           {/* Main Title */}
           <h1 className="hero-title font-display font-800 text-5xl sm:text-6xl lg:text-7xl text-brand-slate mb-6 leading-tight">
             Transform Your
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-brand-teal bg-gradient-to-r"> Property Management</span>
+            <span className="text-brand-blue"> Property Management</span>
             <br />
             with Smart AI
           </h1>
@@ -215,7 +215,7 @@ const PropertyManagement = () => {
           <div className="hero-buttons flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Link
               to="/prediction"
-              className="group px-8 py-4 rounded-2xl text-lg font-display font-600 text-white bg-gradient-to-r from-brand-blue to-brand-teal hover:from-brand-teal hover:to-brand-blue transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 flex items-center justify-center"
+              className="group px-8 py-4 rounded-2xl text-lg font-display font-600 text-white bg-brand-blue hover:bg-brand-blue/90 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center"
             >
               <TrendingUp className="w-5 h-5 mr-2" />
               Try AI Prediction
@@ -223,7 +223,7 @@ const PropertyManagement = () => {
             </Link>
             <Link
               to="/host"
-              className="px-8 py-4 rounded-2xl text-lg font-display font-600 text-brand-slate bg-white dark:bg-slate-800 border-2 border-brand-border hover:border-brand-blue hover:text-brand-blue transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center"
+              className="px-8 py-4 rounded-2xl text-lg font-display font-600 text-brand-slate bg-white dark:bg-slate-800 border-2 border-brand-border hover:border-brand-blue hover:text-brand-blue transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 flex items-center justify-center"
             >
               <Building className="w-5 h-5 mr-2" />
               Property Dashboard
@@ -232,25 +232,25 @@ const PropertyManagement = () => {
 
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-16">
-            <div className="text-center p-6 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl border border-white/20 dark:border-slate-700/20 shadow-xl">
-              <div className="w-12 h-12 bg-gradient-to-br from-brand-blue to-brand-teal rounded-xl flex items-center justify-center mx-auto mb-4">
+            <div className="text-center p-6 bg-white dark:bg-slate-800 rounded-2xl border border-brand-border shadow-lg">
+              <div className="w-12 h-12 bg-brand-blue rounded-xl flex items-center justify-center mx-auto mb-4">
                 <DollarSign className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-display font-700 text-3xl text-brand-slate mb-2">95%</h3>
+              <h3 className="font-display font-700 text-3xl text-brand-slate dark:text-white mb-2">95%</h3>
               <p className="text-slate-600 dark:text-slate-400 font-medium">Accuracy Rate</p>
             </div>
-            <div className="text-center p-6 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl border border-white/20 dark:border-slate-700/20 shadow-xl">
-              <div className="w-12 h-12 bg-gradient-to-br from-brand-teal to-brand-purple rounded-xl flex items-center justify-center mx-auto mb-4">
+            <div className="text-center p-6 bg-white dark:bg-slate-800 rounded-2xl border border-brand-border shadow-lg">
+              <div className="w-12 h-12 bg-brand-teal rounded-xl flex items-center justify-center mx-auto mb-4">
                 <Users className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-display font-700 text-3xl text-brand-slate mb-2">10K+</h3>
+              <h3 className="font-display font-700 text-3xl text-brand-slate dark:text-white mb-2">10K+</h3>
               <p className="text-slate-600 dark:text-slate-400 font-medium">Properties Analyzed</p>
             </div>
-            <div className="text-center p-6 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl border border-white/20 dark:border-slate-700/20 shadow-xl">
-              <div className="w-12 h-12 bg-gradient-to-br from-brand-purple to-brand-orange rounded-xl flex items-center justify-center mx-auto mb-4">
+            <div className="text-center p-6 bg-white dark:bg-slate-800 rounded-2xl border border-brand-border shadow-lg">
+              <div className="w-12 h-12 bg-brand-purple rounded-xl flex items-center justify-center mx-auto mb-4">
                 <Zap className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-display font-700 text-3xl text-brand-slate mb-2">2.5M</h3>
+              <h3 className="font-display font-700 text-3xl text-brand-slate dark:text-white mb-2">2.5M</h3>
               <p className="text-slate-600 dark:text-slate-400 font-medium">Data Points Processed</p>
             </div>
           </div>

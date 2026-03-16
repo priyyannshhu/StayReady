@@ -8,6 +8,7 @@ import PropertyManagement from './pages/PropertyManagement';
 import Auth from './pages/Auth';
 import Dashboard from './pages/Dashboard';
 import Footer from './components/Footer';
+import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
 import { ThemeProvider } from './contexts/ThemeContext';
 
@@ -21,40 +22,54 @@ function App() {
             <Route path="/" element={<PropertyManagement />} />
             <Route path="/auth" element={<Auth />} />
             
-            {/* Protected routes */}
+            {/* Protected routes with Navbar */}
             <Route path="/prediction" element={
               <ProtectedRoute>
+                <Navbar />
                 <Prediction />
+                <Footer />
               </ProtectedRoute>
             } />
             <Route path="/management" element={
               <ProtectedRoute>
+                <Navbar />
                 <PropertyManagement />
+                <Footer />
               </ProtectedRoute>
             } />
             <Route path="/dashboard" element={
               <ProtectedRoute>
+                <Navbar />
                 <Dashboard />
+                <Footer />
               </ProtectedRoute>
             } />
             <Route path="/explore" element={
               <ProtectedRoute>
+                <Navbar />
                 <Explore />
+                <Footer />
               </ProtectedRoute>
             } />
             <Route path="/host" element={
               <ProtectedRoute>
+                <Navbar />
                 <HostDashboard />
+                <Footer />
               </ProtectedRoute>
             } />
             <Route path="/property/:id" element={
               <ProtectedRoute>
+                <Navbar />
                 <PropertyDetail />
+                <Footer />
               </ProtectedRoute>
             } />
             <Route path="/booking-confirmed" element={
               <ProtectedRoute>
+                <Navbar />
                 <BookingConfirmation />
+                <Footer />
               </ProtectedRoute>
             } />
           </Routes>
