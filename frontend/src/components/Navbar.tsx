@@ -32,41 +32,42 @@ const Navbar = () => {
             </span>
           </Link>
 
-          {/* Center Search Pill — desktop */}
-          <div className="hidden md:flex flex-1 max-w-md mx-8">
-            <div className="search-pill flex items-center w-full">
-              <button className="flex items-center flex-1 px-4 py-2.5 text-left gap-2 hover:bg-brand-surface transition-colors duration-150 rounded-l-full">
-                <Search className="w-4 h-4 text-muted-foreground shrink-0" />
-                <div>
-                  <div className="text-xs font-semibold text-brand-charcoal font-display leading-none">Where to?</div>
-                  <div className="text-xs text-muted-foreground mt-0.5">Search destinations</div>
-                </div>
-              </button>
-              <div className="w-px h-8 bg-brand-border" />
-              <button className="px-4 py-2.5 hover:bg-brand-surface transition-colors duration-150 text-xs">
-                <div className="font-semibold text-brand-charcoal font-display leading-none">Check in</div>
-                <div className="text-muted-foreground mt-0.5">Add dates</div>
-              </button>
-              <div className="w-px h-8 bg-brand-border" />
-              <button className="px-4 py-2.5 hover:bg-brand-surface transition-colors duration-150 text-xs">
-                <div className="font-semibold text-brand-charcoal font-display leading-none">Check out</div>
-                <div className="text-muted-foreground mt-0.5">Add dates</div>
-              </button>
-              <div className="w-px h-8 bg-brand-border" />
-              <button className="flex items-center gap-2 px-3 py-2 mr-1 my-1 rounded-full bg-primary hover:bg-primary-hover transition-colors duration-150">
-                <Search className="w-4 h-4 text-white" />
-              </button>
-            </div>
+          {/* Center Navigation — desktop */}
+          <div className="hidden md:flex items-center gap-6">
+            <Link
+              to="/"
+              className="text-sm font-medium text-brand-charcoal hover:text-primary transition-colors font-display"
+            >
+              Dashboard
+            </Link>
+            <Link
+              to="/prediction"
+              className="text-sm font-medium text-brand-charcoal hover:text-primary transition-colors font-display"
+            >
+              AI Price Prediction
+            </Link>
+            <Link
+              to="/host"
+              className="text-sm font-medium text-brand-charcoal hover:text-primary transition-colors font-display"
+            >
+              Property Management
+            </Link>
+            <Link
+              to="/explore"
+              className="text-sm font-medium text-brand-charcoal hover:text-primary transition-colors font-display"
+            >
+              Browse Properties
+            </Link>
           </div>
 
           {/* Right Nav */}
           <div className="flex items-center gap-2">
             {/* Host link */}
             <Link
-              to="/host"
-              className="hidden lg:flex items-center px-4 py-2 rounded-full text-sm font-medium text-brand-charcoal hover:bg-brand-surface transition-colors duration-150 font-display"
+              to="/prediction"
+              className="hidden lg:flex items-center px-4 py-2 rounded-full text-sm font-medium text-white bg-primary hover:bg-primary-hover transition-colors duration-150 font-display"
             >
-              List your property
+              Try AI Prediction
             </Link>
 
             {/* Globe */}
@@ -87,14 +88,27 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile Search bar */}
+        {/* Mobile Navigation */}
         <div className="md:hidden pb-3">
-          <div className="search-pill flex items-center px-4 py-3 gap-3">
-            <Search className="w-4 h-4 text-muted-foreground shrink-0" />
-            <div>
-              <div className="text-sm font-semibold text-brand-charcoal font-display">Where to?</div>
-              <div className="text-xs text-muted-foreground">Anywhere · Any week · Add guests</div>
-            </div>
+          <div className="flex items-center gap-2 px-4">
+            <Link
+              to="/"
+              className="flex-1 py-2 text-center text-sm font-medium text-primary bg-primary/10 rounded-xl font-display"
+            >
+              Dashboard
+            </Link>
+            <Link
+              to="/prediction"
+              className="flex-1 py-2 text-center text-sm font-medium text-brand-charcoal bg-brand-surface rounded-xl font-display"
+            >
+              AI Prediction
+            </Link>
+            <Link
+              to="/host"
+              className="flex-1 py-2 text-center text-sm font-medium text-brand-charcoal bg-brand-surface rounded-xl font-display"
+            >
+              Management
+            </Link>
           </div>
         </div>
       </div>
