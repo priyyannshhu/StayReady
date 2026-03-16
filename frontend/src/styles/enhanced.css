@@ -13,35 +13,58 @@
 }
 
 .property-card {
-  @apply bg-white border border-brand-border/50 rounded-2xl overflow-hidden transition-all duration-300 hover:border-primary/30;
+  background-color: white;
+  border: 1px solid rgb(226 232 240);
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .property-card:hover {
-  @apply shadow-luxury transform -translate-y-1;
+  border-color: rgb(99 102 241 / 0.3);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transform: translateY(-0.25rem);
 }
 
 .card-image {
-  @apply transition-transform duration-300;
+  transition: transform 0.3s ease;
 }
 
 .property-card:hover .card-image {
-  @apply scale-105;
+  transform: scale(1.05);
 }
 
 .price-tag {
-  @apply text-brand-saffron font-bold;
+  font-family: 'display', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #ff9900;
 }
 
 .badge-soldout {
-  @apply bg-red-500 text-white px-3 py-1.5 text-xs font-semibold rounded-full shadow-lg;
+  background-color: #dc2626;
+  color: white;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .badge-available {
-  @apply bg-brand-emerald text-white px-3 py-1.5 text-xs font-semibold rounded-full shadow-lg;
+  background-color: #34c759;
+  color: white;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .star-rating {
-  @apply flex items-center gap-0.5;
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
 }
 
 .bg-gradient-to-t {
@@ -49,33 +72,42 @@
 }
 
 .bg-gradient-card {
-  background: linear-gradient(135deg, hsl(var(--primary) 0%, hsl(var(--secondary) 100%);
+  background: linear-gradient(135deg, hsl(var(--primary) 0%, hsl(var(--secondary) 100%)));
 }
 
 /* Enhanced responsive design */
 @media (max-width: 640px) {
   .property-card {
-    @apply rounded-xl;
+    border-radius: 0.75rem;
   }
   
   .property-card:hover {
-    @apply -translate-y-0.5;
+    transform: translateY(-0.125rem);
   }
 }
 
 @media (min-width: 1024px) {
   .property-card:hover {
-    @apply -translate-y-2;
+    transform: translateY(-0.5rem);
   }
 }
 
 /* Premium button enhancements */
 .btn-primary {
-  @apply bg-gradient-to-r from-brand-saffron to-brand-royal text-white font-semibold py-3 px-6 rounded-xl shadow-luxury transform transition-all duration-300 hover:scale-105 hover:shadow-luxury;
+  background: linear-gradient(to right, #ff9900, #6366f1);
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transform: scale(1);
+  transition: all 0.3s ease;
 }
 
 .btn-primary:hover {
-  @apply from-brand-royal to-brand-gold;
+  background: linear-gradient(to right, #6366f1, #ff9900);
+  transform: scale(1.05);
+  box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.15), 0 15px 15px -5px rgba(0, 0, 0, 0.08);
 }
 
 /* Premium loading states */
