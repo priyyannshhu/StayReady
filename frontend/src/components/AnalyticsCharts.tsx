@@ -57,7 +57,10 @@ export const ConfidenceChart: React.FC<ConfidenceChartProps> = ({ prediction }) 
             data={data}
             cx="50%"
             cy="50%"
-            label={({ name, value }: { name: string; value: number }) => `${name}: ${value.toFixed(1)}%`}
+            label={(props: any) => {
+              const { name, value } = props;
+              return `${name}: ${value.toFixed(1)}%`;
+            }}
             labelLine={false}
             outerRadius={70}
             fill="#8884d8"
