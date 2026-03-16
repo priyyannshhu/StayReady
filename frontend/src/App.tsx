@@ -16,7 +16,7 @@ function App() {
   return (
     <ThemeProvider>
       <Router>
-        <div className="min-h-screen bg-background dark:bg-slate-900">
+        <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-orange-50 dark:from-rose-950 dark:via-pink-950 dark:to-orange-950">
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<PropertyManagement />} />

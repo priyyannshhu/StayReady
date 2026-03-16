@@ -178,21 +178,21 @@ const PropertyManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-orange-50 dark:from-rose-950 dark:via-pink-950 dark:to-orange-950">
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl floating-element"></div>
-        <div className="absolute top-40 right-20 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl floating-element" style={{animationDelay: '2s'}}></div>
-        <div className="absolute bottom-20 left-1/4 w-80 h-80 bg-purple-500/5 rounded-full blur-3xl floating-element" style={{animationDelay: '4s'}}></div>
+        <div className="absolute top-20 left-10 w-72 h-72 bg-brand-coral/5 rounded-full blur-3xl floating-element"></div>
+        <div className="absolute top-40 right-20 w-96 h-96 bg-brand-pink/5 rounded-full blur-3xl floating-element" style={{animationDelay: '2s'}}></div>
+        <div className="absolute bottom-20 left-1/4 w-80 h-80 bg-brand-fuchsia/5 rounded-full blur-3xl floating-element" style={{animationDelay: '4s'}}></div>
       </div>
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-blue-500/5 to-purple-500/10"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-coral/5 via-brand-pink/3 to-brand-fuchsia/5"></div>
         
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-brand-blue/10 rounded-full text-brand-blue text-sm font-display font-600 mb-8 backdrop-blur-sm border border-brand-blue/20">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-brand-coral/10 rounded-full text-brand-coral text-sm font-display font-600 mb-8 backdrop-blur-sm border border-brand-coral/20">
             <Sparkles className="w-4 h-4" />
             AI-Powered Property Intelligence
           </div>
@@ -200,7 +200,7 @@ const PropertyManagement = () => {
           {/* Main Title */}
           <h1 className="hero-title font-display font-800 text-5xl sm:text-6xl lg:text-7xl text-brand-slate mb-6 leading-tight">
             Transform Your
-            <span className="text-brand-blue"> Property Management</span>
+            <span className="text-brand-coral"> Property Management</span>
             <br />
             with Smart AI
           </h1>
@@ -215,7 +215,7 @@ const PropertyManagement = () => {
           <div className="hero-buttons flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Link
               to="/prediction"
-              className="group px-8 py-4 rounded-2xl text-lg font-display font-600 text-white bg-brand-blue hover:bg-brand-blue/90 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center"
+              className="group px-8 py-4 rounded-2xl text-lg font-display font-600 text-white bg-gradient-to-r from-brand-coral to-brand-pink hover:from-brand-pink hover:to-brand-fuchsia transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center"
             >
               <TrendingUp className="w-5 h-5 mr-2" />
               Try AI Prediction
@@ -223,7 +223,7 @@ const PropertyManagement = () => {
             </Link>
             <Link
               to="/host"
-              className="px-8 py-4 rounded-2xl text-lg font-display font-600 text-brand-slate bg-white dark:bg-slate-800 border-2 border-brand-border hover:border-brand-blue hover:text-brand-blue transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 flex items-center justify-center"
+              className="px-8 py-4 rounded-2xl text-lg font-display font-600 text-brand-slate bg-gradient-to-r from-rose-50 to-pink-50 dark:from-rose-900 dark:to-pink-900 border-2 border-brand-pink/30 hover:border-brand-coral hover:text-brand-coral transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 flex items-center justify-center"
             >
               <Building className="w-5 h-5 mr-2" />
               Property Dashboard
@@ -232,22 +232,22 @@ const PropertyManagement = () => {
 
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-16">
-            <div className="text-center p-6 bg-white dark:bg-slate-800 rounded-2xl border border-brand-border shadow-lg">
-              <div className="w-12 h-12 bg-brand-blue rounded-xl flex items-center justify-center mx-auto mb-4">
+            <div className="text-center p-6 bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900 dark:to-pink-900 rounded-2xl border border-brand-pink/20 shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-brand-coral to-brand-pink rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <DollarSign className="w-6 h-6 text-white" />
               </div>
               <h3 className="font-display font-700 text-3xl text-brand-slate dark:text-white mb-2">95%</h3>
               <p className="text-slate-600 dark:text-slate-400 font-medium">Accuracy Rate</p>
             </div>
-            <div className="text-center p-6 bg-white dark:bg-slate-800 rounded-2xl border border-brand-border shadow-lg">
-              <div className="w-12 h-12 bg-brand-teal rounded-xl flex items-center justify-center mx-auto mb-4">
+            <div className="text-center p-6 bg-gradient-to-br from-pink-50 to-orange-50 dark:from-pink-900 dark:to-orange-900 rounded-2xl border border-brand-fuchsia/20 shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-brand-pink to-brand-fuchsia rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Users className="w-6 h-6 text-white" />
               </div>
               <h3 className="font-display font-700 text-3xl text-brand-slate dark:text-white mb-2">10K+</h3>
               <p className="text-slate-600 dark:text-slate-400 font-medium">Properties Analyzed</p>
             </div>
-            <div className="text-center p-6 bg-white dark:bg-slate-800 rounded-2xl border border-brand-border shadow-lg">
-              <div className="w-12 h-12 bg-brand-purple rounded-xl flex items-center justify-center mx-auto mb-4">
+            <div className="text-center p-6 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900 dark:to-amber-900 rounded-2xl border border-brand-rose/20 shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-brand-fuchsia to-brand-rose rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Zap className="w-6 h-6 text-white" />
               </div>
               <h3 className="font-display font-700 text-3xl text-brand-slate dark:text-white mb-2">2.5M</h3>

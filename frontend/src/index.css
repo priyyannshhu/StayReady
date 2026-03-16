@@ -15,31 +15,31 @@
 
 @layer base {
   :root {
-    /* Core Surfaces */
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core Surfaces - Light Background Theme */
+    --background: 355 100% 97%;
+    --foreground: 355 20% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 355 20% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 355 20% 15%;
 
-    /* Brand: Professional Blue Theme */
-    --primary: 217 91% 60%;
+    /* Brand: Airbnb-Inspired Coral */
+    --primary: 355 78% 60%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 217 91% 55%;
+    --primary-hover: 355 78% 55%;
 
-    /* Secondary: Calm Teal */
-    --secondary: 174 80% 45%;
+    /* Secondary: Warm Pink */
+    --secondary: 346 77% 49%;
     --secondary-foreground: 0 0% 100%;
 
-    /* Muted: Soft Surface */
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted: Light Surface */
+    --muted: 355 30% 95%;
+    --muted-foreground: 355 15% 45%;
 
-    /* Accent: Subtle Purple */
-    --accent: 262 83% 58%;
+    /* Accent: Bright Fuchsia */
+    --accent: 330 81% 60%;
     --accent-foreground: 0 0% 100%;
 
     /* Destructive */
@@ -47,18 +47,18 @@
     --destructive-foreground: 210 40% 98%;
 
     /* Borders */
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 217 91% 60%;
+    --border: 355 25% 90%;
+    --input: 355 25% 90%;
+    --ring: 355 78% 60%;
 
-    /* Premium Brand Colors - Less Shiny */
-    --brand-blue: 217 91% 60%;
-    --brand-teal: 174 80% 45%;
-    --brand-purple: 262 83% 58%;
-    --brand-orange: 25 84% 50%;
-    --brand-slate: 222.2 84% 4.9%;
-    --brand-surface: 210 40% 96%;
-    --brand-border: 214.3 31.8% 91.4%;
+    /* Premium Brand Colors - Airbnb Inspired */
+    --brand-coral: 355 78% 60%;
+    --brand-pink: 346 77% 49%;
+    --brand-fuchsia: 330 81% 60%;
+    --brand-rose: 350 89% 60%;
+    --brand-slate: 355 20% 15%;
+    --brand-surface: 355 30% 95%;
+    --brand-border: 355 25% 90%;
 
     /* Radius */
     --radius: 0.75rem;
@@ -91,25 +91,25 @@
   }
 
   .dark {
-    --background: 222 84% 5%;
-    --foreground: 210 40% 98%;
-    --card: 222 84% 5%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 84% 5%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 222 84% 5%;
-    --secondary: 174 80% 45%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 32% 17%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 262 83% 58%;
-    --accent-foreground: 210 40% 98%;
+    --background: 355 25% 8%;
+    --foreground: 355 15% 95%;
+    --card: 355 25% 8%;
+    --card-foreground: 355 15% 95%;
+    --popover: 355 25% 8%;
+    --popover-foreground: 355 15% 95%;
+    --primary: 355 78% 60%;
+    --primary-foreground: 355 15% 95%;
+    --secondary: 346 77% 49%;
+    --secondary-foreground: 355 15% 95%;
+    --muted: 355 20% 15%;
+    --muted-foreground: 355 10% 65%;
+    --accent: 330 81% 60%;
+    --accent-foreground: 355 15% 95%;
     --destructive: 0 62% 30%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 32% 17%;
-    --input: 217 32% 17%;
-    --ring: 217 91% 60%;
+    --destructive-foreground: 355 15% 95%;
+    --border: 355 20% 15%;
+    --input: 355 20% 15%;
+    --ring: 355 78% 60%;
   }
 }
 
