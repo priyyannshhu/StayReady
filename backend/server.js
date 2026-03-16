@@ -26,6 +26,7 @@ db.once('open', () => {
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
   phone: String,
   createdAt: { type: Date, default: Date.now }
 });
@@ -576,6 +577,8 @@ app.post('/api/auth/login', async (req, res) => {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
     
+    console.log('Login attempt:', { email, password, storedPassword: user.password });
+    
     // Simple password check (in production, use bcrypt)
     if (user.password !== password) {
       return res.status(400).json({ error: 'Invalid email or password' });
@@ -731,6 +734,7 @@ const initializeDemoData = async () => {
     const demoUser = new User({
       name: 'Demo User',
       email: 'demo@stayready.com',
+      password: 'demo123',
       phone: '+1-555-0123'
     });
     await demoUser.save();

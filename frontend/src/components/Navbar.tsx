@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Search, Menu, User, Globe, Home } from 'lucide-react';
+import ThemeToggle from './ThemeToggle';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -74,6 +75,9 @@ const Navbar = () => {
             <button className="hidden md:flex w-10 h-10 items-center justify-center rounded-full hover:bg-brand-surface transition-colors duration-150">
               <Globe className="w-4 h-4 text-brand-charcoal" />
             </button>
+
+            {/* Theme Toggle */}
+            <ThemeToggle />
 
             {/* User menu pill */}
             <button

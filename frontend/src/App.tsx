@@ -9,26 +9,29 @@ import Auth from './pages/Auth';
 import Dashboard from './pages/Dashboard';
 import Footer from './components/Footer';
 import Navbar from './components/Navbar';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 function App() {
   return (
-    <Router>
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<PropertyManagement />} />
-          <Route path="/prediction" element={<Prediction />} />
-          <Route path="/management" element={<PropertyManagement />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/host" element={<HostDashboard />} />
-          <Route path="/property/:id" element={<PropertyDetail />} />
-          <Route path="/booking-confirmed" element={<BookingConfirmation />} />
-        </Routes>
-        <Footer />
-      </div>
-    </Router>
+    <ThemeProvider>
+      <Router>
+        <div className="min-h-screen bg-background dark:bg-slate-900">
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<PropertyManagement />} />
+            <Route path="/prediction" element={<Prediction />} />
+            <Route path="/management" element={<PropertyManagement />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/explore" element={<Explore />} />
+            <Route path="/host" element={<HostDashboard />} />
+            <Route path="/property/:id" element={<PropertyDetail />} />
+            <Route path="/booking-confirmed" element={<BookingConfirmation />} />
+          </Routes>
+          <Footer />
+        </div>
+      </Router>
+    </ThemeProvider>
   );
 }
 
