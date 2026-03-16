@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: stayready-ml-service
+    env: python
+    repo: https://github.com/priyyannshhu/StayReady.git
+    rootDir: ml-service
+    buildCommand: pip install -r requirements.txt
+    startCommand: python main.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9

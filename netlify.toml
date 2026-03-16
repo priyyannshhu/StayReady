@@ -1,0 +1,22 @@
+[build]
+  base = "frontend/"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://stayready-backend.onrender.com/api/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/predict"
+  to = "https://stayready-ml-service.onrender.com/predict"
+  status = 200
+
+[context.production]
+  [context.production.environment]
+    VITE_API_URL = "https://stayready-backend.onrender.com"
+    VITE_ML_SERVICE_URL = "https://stayready-ml-service.onrender.com"

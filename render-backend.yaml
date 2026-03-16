@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: stayready-backend
+    env: node
+    repo: https://github.com/priyyannshhu/StayReady.git
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGODB_URI
+        value: ${MONGODB_URI}
+      - key: RAZORPAY_KEY_ID
+        value: ${RAZORPAY_KEY_ID}
+      - key: RAZORPAY_KEY_SECRET
+        value: ${RAZORPAY_KEY_SECRET}
