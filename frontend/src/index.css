@@ -4,6 +4,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import enhanced premium styles */
+@import './styles/enhanced.css';
+
 /* =============================================
    StayReady Design System
    Airbnb-Inspired High-Trust Hospitality UI

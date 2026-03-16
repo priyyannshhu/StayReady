@@ -1,0 +1,91 @@
+/* =============================================
+   Enhanced Premium Styling
+   Indian-inspired luxury design
+   ============================================= */
+
+/* Enhanced utility classes */
+.shadow-luxury {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.shadow-card {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+}
+
+.property-card {
+  @apply bg-white border border-brand-border/50 rounded-2xl overflow-hidden transition-all duration-300 hover:border-primary/30;
+}
+
+.property-card:hover {
+  @apply shadow-luxury transform -translate-y-1;
+}
+
+.card-image {
+  @apply transition-transform duration-300;
+}
+
+.property-card:hover .card-image {
+  @apply scale-105;
+}
+
+.price-tag {
+  @apply text-brand-saffron font-bold;
+}
+
+.badge-soldout {
+  @apply bg-red-500 text-white px-3 py-1.5 text-xs font-semibold rounded-full shadow-lg;
+}
+
+.badge-available {
+  @apply bg-brand-emerald text-white px-3 py-1.5 text-xs font-semibold rounded-full shadow-lg;
+}
+
+.star-rating {
+  @apply flex items-center gap-0.5;
+}
+
+.bg-gradient-to-t {
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+}
+
+.bg-gradient-card {
+  background: linear-gradient(135deg, hsl(var(--primary) 0%, hsl(var(--secondary) 100%);
+}
+
+/* Enhanced responsive design */
+@media (max-width: 640px) {
+  .property-card {
+    @apply rounded-xl;
+  }
+  
+  .property-card:hover {
+    @apply -translate-y-0.5;
+  }
+}
+
+@media (min-width: 1024px) {
+  .property-card:hover {
+    @apply -translate-y-2;
+  }
+}
+
+/* Premium button enhancements */
+.btn-primary {
+  @apply bg-gradient-to-r from-brand-saffron to-brand-royal text-white font-semibold py-3 px-6 rounded-xl shadow-luxury transform transition-all duration-300 hover:scale-105 hover:shadow-luxury;
+}
+
+.btn-primary:hover {
+  @apply from-brand-royal to-brand-gold;
+}
+
+/* Premium loading states */
+.loading-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
