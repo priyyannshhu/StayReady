@@ -17,48 +17,48 @@
   :root {
     /* Core Surfaces */
     --background: 0 0% 100%;
-    --foreground: 0 0% 13%;
+    --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 13%;
+    --card-foreground: 222.2 84% 4.9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 13%;
+    --popover-foreground: 222.2 84% 4.9%;
 
-    /* Brand: Premium Saffron Theme */
-    --primary: 28 100% 62%;
-    --primary-foreground: 0 0% 100%;
-    --primary-hover: 28 100% 55%;
+    /* Brand: Modern Blue Theme */
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --primary-hover: 221.2 83.2% 48%;
 
-    /* Secondary: Elegant Emerald */
-    --secondary: 174 84% 40%;
-    --secondary-foreground: 0 0% 100%;
+    /* Secondary: Sophisticated Teal */
+    --secondary: 185 84% 42%;
+    --secondary-foreground: 210 40% 98%;
 
     /* Muted: Soft Surface */
-    --muted: 210 40% 98%;
-    --muted-foreground: 0 0% 44%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    /* Accent: Premium Gold */
-    --accent: 45 100% 47%;
-    --accent-foreground: 0 0% 100%;
+    /* Accent: Vibrant Purple */
+    --accent: 270 76% 53%;
+    --accent-foreground: 210 40% 98%;
 
     /* Destructive */
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive-foreground: 210 40% 98%;
 
     /* Borders */
-    --border: 210 40% 96%;
-    --input: 210 40% 96%;
-    --ring: 28 100% 62%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
 
     /* Premium Brand Colors */
-    --brand-saffron: 39 100% 62%;
-    --brand-emerald: 174 84% 40%;
-    --brand-royal: 220 90% 48%;
-    --brand-gold: 45 100% 47%;
-    --brand-charcoal: 0 0% 10%;
-    --brand-surface: 250 40% 98%;
-    --brand-border: 210 40% 96%;
+    --brand-blue: 221.2 83.2% 53.3%;
+    --brand-teal: 185 84% 42%;
+    --brand-purple: 270 76% 53%;
+    --brand-orange: 25 95% 53%;
+    --brand-slate: 222.2 84% 4.9%;
+    --brand-surface: 210 40% 96%;
+    --brand-border: 214.3 31.8% 91.4%;
 
     /* Radius */
     --radius: 0.75rem;
@@ -91,33 +91,25 @@
   }
 
   .dark {
-    --background: 0 0% 8%;
-    --foreground: 0 0% 96%;
-    --card: 0 0% 11%;
-    --card-foreground: 0 0% 96%;
-    --popover: 0 0% 11%;
-    --popover-foreground: 0 0% 96%;
-    --primary: 349 100% 60%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 96%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 64%;
-    --accent: 0 0% 15%;
-    --accent-foreground: 0 0% 96%;
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 185 84% 42%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 270 76% 53%;
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 96%;
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 349 100% 60%;
-    --sidebar-background: 0 0% 9%;
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 349 100% 60%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 13%;
-    --sidebar-accent-foreground: 0 0% 90%;
-    --sidebar-border: 0 0% 16%;
-    --sidebar-ring: 349 100% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 221.2 83.2% 53.3%;
   }
 }
 

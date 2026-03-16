@@ -8,7 +8,7 @@ import PropertyManagement from './pages/PropertyManagement';
 import Auth from './pages/Auth';
 import Dashboard from './pages/Dashboard';
 import Footer from './components/Footer';
-import Navbar from './components/Navbar';
+import ProtectedRoute from './components/ProtectedRoute';
 import { ThemeProvider } from './contexts/ThemeContext';
 
 function App() {
@@ -16,19 +16,48 @@ function App() {
     <ThemeProvider>
       <Router>
         <div className="min-h-screen bg-background dark:bg-slate-900">
-          <Navbar />
           <Routes>
+            {/* Public routes */}
             <Route path="/" element={<PropertyManagement />} />
-            <Route path="/prediction" element={<Prediction />} />
-            <Route path="/management" element={<PropertyManagement />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/explore" element={<Explore />} />
-            <Route path="/host" element={<HostDashboard />} />
-            <Route path="/property/:id" element={<PropertyDetail />} />
-            <Route path="/booking-confirmed" element={<BookingConfirmation />} />
+            
+            {/* Protected routes */}
+            <Route path="/prediction" element={
+              <ProtectedRoute>
+                <Prediction />
+              </ProtectedRoute>
+            } />
+            <Route path="/management" element={
+              <ProtectedRoute>
+                <PropertyManagement />
+              </ProtectedRoute>
+            } />
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/explore" element={
+              <ProtectedRoute>
+                <Explore />
+              </ProtectedRoute>
+            } />
+            <Route path="/host" element={
+              <ProtectedRoute>
+                <HostDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/property/:id" element={
+              <ProtectedRoute>
+                <PropertyDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/booking-confirmed" element={
+              <ProtectedRoute>
+                <BookingConfirmation />
+              </ProtectedRoute>
+            } />
           </Routes>
-          <Footer />
         </div>
       </Router>
     </ThemeProvider>

@@ -186,106 +186,21 @@ const PropertyManagement = () => {
         <div className="absolute bottom-20 left-1/4 w-80 h-80 bg-purple-500/5 rounded-full blur-3xl floating-element" style={{animationDelay: '4s'}}></div>
       </div>
 
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
-                <Building className="w-5 h-5 text-white" strokeWidth={2.5} />
-              </div>
-              <span className="font-display font-700 text-xl text-slate-800 group-hover:text-primary transition-colors">
-                Stay<span className="text-primary">Ready</span>
-              </span>
-            </Link>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-8">
-              <Link
-                to="/prediction"
-                className="text-sm font-medium text-slate-600 hover:text-primary transition-all duration-200 font-display hover:scale-105"
-              >
-                AI Prediction
-              </Link>
-              <Link
-                to="/host"
-                className="text-sm font-medium text-slate-600 hover:text-primary transition-all duration-200 font-display hover:scale-105"
-              >
-                Properties
-              </Link>
-              <Link
-                to="/explore"
-                className="text-sm font-medium text-slate-600 hover:text-primary transition-all duration-200 font-display hover:scale-105"
-              >
-                Explore
-              </Link>
-            </div>
-
-            {/* CTA Button */}
-            <Link
-              to="/prediction"
-              className="hidden lg:flex items-center px-6 py-3 rounded-full text-sm font-medium text-white bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-primary transition-all duration-300 shadow-lg hover:shadow-xl font-display hover:scale-105"
-            >
-              <Sparkles className="w-4 h-4 mr-2" />
-              Try AI Prediction
-            </Link>
-
-            {/* Mobile Menu */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors"
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
-
-          {/* Mobile Navigation */}
-          {mobileMenuOpen && (
-            <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-slate-200 shadow-xl">
-              <div className="max-w-7xl mx-auto px-4 py-4 space-y-3">
-                <Link
-                  to="/prediction"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block py-3 text-base font-medium text-slate-700 hover:text-primary transition-colors font-display"
-                >
-                  AI Prediction
-                </Link>
-                <Link
-                  to="/host"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block py-3 text-base font-medium text-slate-700 hover:text-primary transition-colors font-display"
-                >
-                  Properties
-                </Link>
-                <Link
-                  to="/explore"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block py-3 text-base font-medium text-slate-700 hover:text-primary transition-colors font-display"
-                >
-                  Explore
-                </Link>
-              </div>
-            </div>
-          )}
-        </div>
-      </nav>
-
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-blue-500/5 to-purple-500/10"></div>
         
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-full text-primary text-sm font-display font-600 mb-8 backdrop-blur-sm border border-primary/30">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-blue/20 to-brand-teal/20 rounded-full text-brand-blue text-sm font-display font-600 mb-8 backdrop-blur-sm border border-brand-blue/30">
             <Sparkles className="w-4 h-4" />
             AI-Powered Property Intelligence
           </div>
 
           {/* Main Title */}
-          <h1 className="hero-title font-display font-800 text-5xl sm:text-6xl lg:text-7xl text-slate-900 mb-6 leading-tight">
+          <h1 className="hero-title font-display font-800 text-5xl sm:text-6xl lg:text-7xl text-brand-slate mb-6 leading-tight">
             Transform Your
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600 bg-gradient-to-r"> Property Management</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-blue to-brand-teal bg-gradient-to-r"> Property Management</span>
             <br />
             with Smart AI
           </h1>
@@ -300,7 +215,7 @@ const PropertyManagement = () => {
           <div className="hero-buttons flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Link
               to="/prediction"
-              className="group px-8 py-4 rounded-2xl text-lg font-display font-600 text-white bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-primary transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 flex items-center justify-center"
+              className="group px-8 py-4 rounded-2xl text-lg font-display font-600 text-white bg-gradient-to-r from-brand-blue to-brand-teal hover:from-brand-teal hover:to-brand-blue transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 flex items-center justify-center"
             >
               <TrendingUp className="w-5 h-5 mr-2" />
               Try AI Prediction
@@ -308,7 +223,7 @@ const PropertyManagement = () => {
             </Link>
             <Link
               to="/host"
-              className="px-8 py-4 rounded-2xl text-lg font-display font-600 text-slate-700 bg-white border-2 border-slate-200 hover:border-primary hover:text-primary transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center"
+              className="px-8 py-4 rounded-2xl text-lg font-display font-600 text-brand-slate bg-white dark:bg-slate-800 border-2 border-brand-border hover:border-brand-blue hover:text-brand-blue transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center"
             >
               <Building className="w-5 h-5 mr-2" />
               Property Dashboard
@@ -317,26 +232,26 @@ const PropertyManagement = () => {
 
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-16">
-            <div className="text-center p-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/20 shadow-xl">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+            <div className="text-center p-6 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl border border-white/20 dark:border-slate-700/20 shadow-xl">
+              <div className="w-12 h-12 bg-gradient-to-br from-brand-blue to-brand-teal rounded-xl flex items-center justify-center mx-auto mb-4">
                 <DollarSign className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-display font-700 text-3xl text-slate-900 mb-2">95%</h3>
-              <p className="text-slate-600 font-medium">Accuracy Rate</p>
+              <h3 className="font-display font-700 text-3xl text-brand-slate mb-2">95%</h3>
+              <p className="text-slate-600 dark:text-slate-400 font-medium">Accuracy Rate</p>
             </div>
-            <div className="text-center p-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/20 shadow-xl">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+            <div className="text-center p-6 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl border border-white/20 dark:border-slate-700/20 shadow-xl">
+              <div className="w-12 h-12 bg-gradient-to-br from-brand-teal to-brand-purple rounded-xl flex items-center justify-center mx-auto mb-4">
                 <Users className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-display font-700 text-3xl text-slate-900 mb-2">10K+</h3>
-              <p className="text-slate-600 font-medium">Properties Analyzed</p>
+              <h3 className="font-display font-700 text-3xl text-brand-slate mb-2">10K+</h3>
+              <p className="text-slate-600 dark:text-slate-400 font-medium">Properties Analyzed</p>
             </div>
-            <div className="text-center p-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/20 shadow-xl">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+            <div className="text-center p-6 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-2xl border border-white/20 dark:border-slate-700/20 shadow-xl">
+              <div className="w-12 h-12 bg-gradient-to-br from-brand-purple to-brand-orange rounded-xl flex items-center justify-center mx-auto mb-4">
                 <Zap className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-display font-700 text-3xl text-slate-900 mb-2">Secs</h3>
-              <p className="text-slate-600 font-medium">Instant Predictions</p>
+              <h3 className="font-display font-700 text-3xl text-brand-slate mb-2">2.5M</h3>
+              <p className="text-slate-600 dark:text-slate-400 font-medium">Data Points Processed</p>
             </div>
           </div>
         </div>
