@@ -25,7 +25,6 @@ import {
   Shield
 } from 'lucide-react';
 import { PriceChart, ConfidenceChart, PricePerSqFtChart } from '../components/AnalyticsCharts';
-import Footer from '../components/Footer';
 
 interface ManualPredictionForm {
   country: string;
@@ -187,7 +186,7 @@ const PropertyManagement = () => {
       </div>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24">
         <div className="absolute inset-0 bg-gradient-to-br from-brand-coral/5 via-brand-pink/3 to-brand-fuchsia/5"></div>
         
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -559,8 +558,7 @@ const PropertyManagement = () => {
         </div>
       </section>
 
-      <Footer />
-    </div>
+      </div>
   );
 };
 

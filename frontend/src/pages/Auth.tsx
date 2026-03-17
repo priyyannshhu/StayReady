@@ -29,8 +29,13 @@ const Auth = () => {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
         navigate('/dashboard');
-      } else { setError('Invalid email or password'); }
-    } catch { setError('Login failed. Please try again.'); }
+      } else { 
+        const errorData = await res.json().catch(() => ({}));
+        setError(errorData.message || 'Invalid email or password'); 
+      }
+    } catch { 
+      setError('Login failed. Please check your connection and try again.'); 
+    }
     finally { setIsLoading(false); }
   };
 
@@ -41,7 +46,7 @@ const Auth = () => {
       setError('Passwords do not match'); setIsLoading(false); return;
     }
     try {
-      const res = await fetch(`${API_URL}/users`, {
+      const res = await fetch(`${API_URL}/auth/register`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: registerForm.name, email: registerForm.email, password: registerForm.password }),
       });
@@ -50,8 +55,13 @@ const Auth = () => {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
         navigate('/dashboard');
-      } else { setError('Registration failed'); }
-    } catch { setError('Registration failed. Please try again.'); }
+      } else { 
+        const errorData = await res.json().catch(() => ({}));
+        setError(errorData.message || 'Registration failed'); 
+      }
+    } catch { 
+      setError('Registration failed. Please check your connection and try again.'); 
+    }
     finally { setIsLoading(false); }
   };
 
