@@ -14,11 +14,13 @@ const Auth = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true); setError('');
     try {
-      const res = await fetch('/api/auth/login', {
+      const res = await fetch(`${API_URL}/auth/login`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(loginForm),
       });
@@ -39,7 +41,7 @@ const Auth = () => {
       setError('Passwords do not match'); setIsLoading(false); return;
     }
     try {
-      const res = await fetch('/api/auth/register', {
+      const res = await fetch(`${API_URL}/users`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: registerForm.name, email: registerForm.email, password: registerForm.password }),
       });

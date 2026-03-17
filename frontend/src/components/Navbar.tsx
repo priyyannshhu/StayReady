@@ -7,6 +7,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -14,13 +15,16 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => { setMenuOpen(false); }, [location]);
+  useEffect(() => { 
+    setMenuOpen(false); 
+    // Check authentication status
+    const token = localStorage.getItem('token');
+    setIsAuthenticated(!!token);
+  }, [location]);
 
   const navLinks = [
-    { to: '/', label: 'Dashboard' },
-    { to: '/explore', label: 'Browse' },
+    { to: '/explore', label: 'Browse Properties' },
     { to: '/prediction', label: 'AI Pricing' },
-    { to: '/host', label: 'Manage' },
   ];
 
   return (
@@ -56,26 +60,44 @@ const Navbar = () => {
           </nav>
 
           {/* Right Controls */}
-          <div className="flex items-center gap-2">
-            <Link
-              to="/prediction"
-              className="hidden lg:inline-flex items-center gap-1.5 btn-primary px-4 py-2 text-sm rounded-full"
-            >
-              Try AI Pricing
-            </Link>
-
-            <ThemeToggle />
-
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="flex items-center gap-2 border border-[#dddddd] rounded-full px-3 py-2 hover:shadow-sm-soft transition-all duration-150 bg-white"
-              aria-label="Open menu"
-            >
-              {menuOpen ? <X className="w-4 h-4 text-[#1a1a1a]" /> : <Menu className="w-4 h-4 text-[#1a1a1a]" />}
-              <div className="w-7 h-7 rounded-full bg-[#1a1a1a] flex items-center justify-center">
-                <User className="w-3.5 h-3.5 text-white" />
-              </div>
-            </button>
+          <div className="flex items-center gap-3">
+            {isAuthenticated ? (
+              // Authenticated user buttons
+              <>
+                <Link
+                  to="/dashboard"
+                  className="hidden lg:inline-flex items-center gap-1.5 btn-secondary px-4 py-2 text-sm rounded-full"
+                >
+                  Dashboard
+                </Link>
+                <button
+                  onClick={() => setMenuOpen(!menuOpen)}
+                  className="flex items-center gap-2 border border-[#dddddd] rounded-full px-3 py-2 hover:shadow-sm-soft transition-all duration-150 bg-white"
+                  aria-label="Open menu"
+                >
+                  {menuOpen ? <X className="w-4 h-4 text-[#1a1a1a]" /> : <Menu className="w-4 h-4 text-[#1a1a1a]" />}
+                  <div className="w-7 h-7 rounded-full bg-[#1a1a1a] flex items-center justify-center">
+                    <User className="w-3.5 h-3.5 text-white" />
+                  </div>
+                </button>
+              </>
+            ) : (
+              // Unauthenticated user buttons
+              <>
+                <Link
+                  to="/auth"
+                  className="hidden sm:inline-flex items-center px-4 py-2 text-sm font-medium text-[#1a1a1a] hover:bg-[#f7f7f7] rounded-full transition-colors duration-150"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/auth"
+                  className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-hover rounded-full transition-colors duration-150 shadow-btn"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
         </div>
 
@@ -98,7 +120,7 @@ const Navbar = () => {
       </div>
 
       {/* Dropdown */}
-      {menuOpen && (
+      {menuOpen && isAuthenticated && (
         <div className="absolute top-full right-4 mt-2 w-56 bg-white border border-[#e0e0e0] rounded-2xl shadow-modal animate-fade-in-scale overflow-hidden">
           <nav className="py-2">
             {navLinks.map(link => (
@@ -111,12 +133,19 @@ const Navbar = () => {
               </Link>
             ))}
             <div className="h-px bg-[#e0e0e0] mx-4 my-1" />
-            <Link to="/auth" className="flex items-center px-4 py-3 text-sm text-[#1a1a1a] hover:bg-[#f7f7f7] transition-colors font-semibold">
-              Sign up
+            <Link to="/dashboard" className="flex items-center px-4 py-3 text-sm text-[#1a1a1a] hover:bg-[#f7f7f7] transition-colors font-semibold">
+              Dashboard
             </Link>
-            <Link to="/auth" className="flex items-center px-4 py-3 text-sm text-[#717171] hover:bg-[#f7f7f7] transition-colors">
-              Log in
-            </Link>
+            <button 
+              onClick={() => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/';
+              }}
+              className="w-full flex items-center px-4 py-3 text-sm text-[#717171] hover:bg-[#f7f7f7] transition-colors"
+            >
+              Log out
+            </button>
           </nav>
         </div>
       )}

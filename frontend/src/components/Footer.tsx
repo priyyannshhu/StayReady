@@ -31,11 +31,11 @@ const Footer = () => (
         <div>
           <h4 className="font-display font-600 text-white text-xs uppercase tracking-widest mb-5">Explore</h4>
           <ul className="space-y-3">
-            {['Browse Properties', 'Popular Destinations', 'New Listings', 'Trending Stays', 'AI Price Tool'].map(item => (
-              <li key={item}>
-                <Link to="/explore" className="text-sm text-white/55 hover:text-white transition-colors duration-150">{item}</Link>
-              </li>
-            ))}
+            <li><Link to="/explore" className="text-sm text-white/55 hover:text-white transition-colors duration-150">Browse Properties</Link></li>
+            <li><Link to="/explore" className="text-sm text-white/55 hover:text-white transition-colors duration-150">Popular Destinations</Link></li>
+            <li><Link to="/explore" className="text-sm text-white/55 hover:text-white transition-colors duration-150">New Listings</Link></li>
+            <li><Link to="/explore" className="text-sm text-white/55 hover:text-white transition-colors duration-150">Trending Stays</Link></li>
+            <li><Link to="/prediction" className="text-sm text-white/55 hover:text-white transition-colors duration-150">AI Price Tool</Link></li>
           </ul>
         </div>
 
@@ -43,11 +43,11 @@ const Footer = () => (
         <div>
           <h4 className="font-display font-600 text-white text-xs uppercase tracking-widest mb-5">Hosting</h4>
           <ul className="space-y-3">
-            {['List Your Property', 'Host Dashboard', 'AI Pricing', 'Host Resources', 'Community'].map(item => (
-              <li key={item}>
-                <Link to="/host" className="text-sm text-white/55 hover:text-white transition-colors duration-150">{item}</Link>
-              </li>
-            ))}
+            <li><Link to="/host" className="text-sm text-white/55 hover:text-white transition-colors duration-150">List Your Property</Link></li>
+            <li><Link to="/host" className="text-sm text-white/55 hover:text-white transition-colors duration-150">Host Dashboard</Link></li>
+            <li><Link to="/prediction" className="text-sm text-white/55 hover:text-white transition-colors duration-150">AI Pricing</Link></li>
+            <li><Link to="/host" className="text-sm text-white/55 hover:text-white transition-colors duration-150">Host Resources</Link></li>
+            <li><Link to="/host" className="text-sm text-white/55 hover:text-white transition-colors duration-150">Community</Link></li>
           </ul>
         </div>
 
@@ -55,25 +55,23 @@ const Footer = () => (
         <div>
           <h4 className="font-display font-600 text-white text-xs uppercase tracking-widest mb-5">Support</h4>
           <ul className="space-y-3">
-            {['Help Center', 'Safety Info', 'Cancellation', 'Report a Concern', 'Contact Us'].map(item => (
-              <li key={item}>
-                <a href="#" className="text-sm text-white/55 hover:text-white transition-colors duration-150">{item}</a>
-              </li>
-            ))}
+            <li><Link to="/support" className="text-sm text-white/55 hover:text-white transition-colors duration-150">Help Center</Link></li>
+            <li><Link to="/support" className="text-sm text-white/55 hover:text-white transition-colors duration-150">Safety Info</Link></li>
+            <li><Link to="/support" className="text-sm text-white/55 hover:text-white transition-colors duration-150">Cancellation</Link></li>
+            <li><Link to="/support" className="text-sm text-white/55 hover:text-white transition-colors duration-150">Report a Concern</Link></li>
+            <li><Link to="/support" className="text-sm text-white/55 hover:text-white transition-colors duration-150">Contact Us</Link></li>
           </ul>
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 py-6">
-        <p className="text-xs text-white/35">© {new Date().getFullYear()} StayReady, Inc. All rights reserved.</p>
-        <div className="flex items-center gap-5">
-          {['Privacy', 'Terms', 'Sitemap'].map(item => (
-            <a key={item} href="#" className="text-xs text-white/35 hover:text-white/70 transition-colors">{item}</a>
-          ))}
-        </div>
-        <p className="text-xs text-white/25 flex items-center gap-1">
-          Made with <Heart className="w-3 h-3 fill-primary text-primary" /> for travelers
+      {/* Bottom */}
+      <div className="py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p className="text-sm text-white/55">
+          © 2024 StayReady. All rights reserved.
         </p>
+        <div className="flex items-center gap-1 text-sm text-white/55">
+          Made with <Heart className="w-4 h-4 text-primary fill-current" /> by the StayReady Team
+        </div>
       </div>
     </div>
   </footer>
