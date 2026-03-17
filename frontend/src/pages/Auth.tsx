@@ -5,6 +5,8 @@ import { Lock, Mail, Eye, EyeOff, ArrowRight, Home, User } from 'lucide-react';
 interface LoginFormData { email: string; password: string; }
 interface RegisterFormData { name: string; email: string; password: string; confirmPassword: string; }
 
+import { API_BASE_URL } from '../config/api';
+
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
@@ -14,9 +16,6 @@ const Auth = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-
-  // Add timeout to fetch requests
   const fetchWithTimeout = async (url: string, options: RequestInit, timeout = 15000) => {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeout);
@@ -41,7 +40,7 @@ const Auth = () => {
     e.preventDefault();
     setIsLoading(true); setError('');
     try {
-      const res = await fetchWithTimeout(`${API_URL}/auth/login`, {
+      const res = await fetchWithTimeout(`${API_BASE_URL}/auth/login`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(loginForm),
       });
@@ -72,7 +71,7 @@ const Auth = () => {
       setError('Passwords do not match'); setIsLoading(false); return;
     }
     try {
-      const res = await fetchWithTimeout(`${API_URL}/auth/register`, {
+      const res = await fetchWithTimeout(`${API_BASE_URL}/auth/register`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: registerForm.name, email: registerForm.email, password: registerForm.password }),
       });

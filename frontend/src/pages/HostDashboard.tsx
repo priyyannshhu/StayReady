@@ -20,19 +20,19 @@ interface PredictionData {
   pricePerSqFt: number;
 }
 
+import { API_BASE_URL } from '../config/api';
+
 const HostDashboard = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [predictionData, setPredictionData] = useState<PredictionData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-
   useEffect(() => {
     // Fetch demo properties using backend API
     const loadProperties = async () => {
       try {
-        const response = await fetch(`${API_URL}/properties/demo`);
+        const response = await fetch(`${API_BASE_URL}/properties/demo`);
         const data = await response.json();
         setProperties(data);
       } catch (error) {
@@ -47,7 +47,7 @@ const HostDashboard = () => {
     setIsLoading(true);
     setSelectedPropertyId(property.id);
     try {
-      const response = await fetch(`${API_URL}/predict-price`, {
+      const response = await fetch(`${API_BASE_URL}/predict-price`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
