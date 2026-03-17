@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 const app = express();
@@ -543,10 +544,14 @@ app.post('/api/auth/register', async (req, res) => {
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ error: 'User already exists with this email' });
+      return res.status(400).json({ message: 'User already exists with this email' });
     }
     
-    const user = new User({ name, email, password });
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    
+    const user = new User({ name, email, password: hashedPassword });
     await user.save();
     
     // Generate JWT token (simplified for demo)
@@ -562,7 +567,8 @@ app.post('/api/auth/register', async (req, res) => {
       }
     });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('Registration error:', error);
+    res.status(500).json({ message: 'Registration failed. Please try again.' });
   }
 });
 
@@ -574,14 +580,15 @@ app.post('/api/auth/login', async (req, res) => {
     // Find user by email
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ error: 'Invalid email or password' });
+      return res.status(400).json({ message: 'Invalid email or password' });
     }
     
-    console.log('Login attempt:', { email, password, storedPassword: user.password });
+    console.log('Login attempt:', { email, userId: user._id });
     
-    // Simple password check (in production, use bcrypt)
-    if (user.password !== password) {
-      return res.status(400).json({ error: 'Invalid email or password' });
+    // Compare hashed password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid email or password' });
     }
     
     // Generate JWT token (simplified for demo)
@@ -597,7 +604,8 @@ app.post('/api/auth/login', async (req, res) => {
       }
     });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Login failed. Please try again.' });
   }
 });
 

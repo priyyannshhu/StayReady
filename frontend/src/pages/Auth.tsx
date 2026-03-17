@@ -16,11 +16,32 @@ const Auth = () => {
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
+  // Add timeout to fetch requests
+  const fetchWithTimeout = async (url: string, options: RequestInit, timeout = 15000) => {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal
+      });
+      clearTimeout(id);
+      return response;
+    } catch (error) {
+      clearTimeout(id);
+      if (error.name === 'AbortError') {
+        throw new Error('Request timed out. Please try again.');
+      }
+      throw error;
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true); setError('');
     try {
-      const res = await fetch(`${API_URL}/auth/login`, {
+      const res = await fetchWithTimeout(`${API_URL}/auth/login`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(loginForm),
       });
@@ -33,8 +54,13 @@ const Auth = () => {
         const errorData = await res.json().catch(() => ({}));
         setError(errorData.message || 'Invalid email or password'); 
       }
-    } catch { 
-      setError('Login failed. Please check your connection and try again.'); 
+    } catch (error: any) { 
+      console.error('Login error:', error);
+      if (error.message === 'Request timed out. Please try again.') {
+        setError('Server is taking too long to respond. Please try again.');
+      } else {
+        setError('Login failed. Please check your connection and try again.'); 
+      }
     }
     finally { setIsLoading(false); }
   };
@@ -46,7 +72,7 @@ const Auth = () => {
       setError('Passwords do not match'); setIsLoading(false); return;
     }
     try {
-      const res = await fetch(`${API_URL}/auth/register`, {
+      const res = await fetchWithTimeout(`${API_URL}/auth/register`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: registerForm.name, email: registerForm.email, password: registerForm.password }),
       });
@@ -59,8 +85,13 @@ const Auth = () => {
         const errorData = await res.json().catch(() => ({}));
         setError(errorData.message || 'Registration failed'); 
       }
-    } catch { 
-      setError('Registration failed. Please check your connection and try again.'); 
+    } catch (error: any) { 
+      console.error('Registration error:', error);
+      if (error.message === 'Request timed out. Please try again.') {
+        setError('Server is taking too long to respond. Please try again.');
+      } else {
+        setError('Registration failed. Please check your connection and try again.'); 
+      }
     }
     finally { setIsLoading(false); }
   };
