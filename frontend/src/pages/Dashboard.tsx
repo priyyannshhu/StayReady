@@ -1,42 +1,23 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  Building, 
-  TrendingUp, 
-  Users, 
-  DollarSign, 
-  Home, 
-  Bed, 
-  Bath, 
-  Plus,
-  LogOut,
-  Settings,
-  BarChart3,
-  Eye,
-  Edit,
-  Trash2,
-  Calendar,
-  MapPin
+import {
+  Building, TrendingUp, Users, DollarSign, Home,
+  Bed, Bath, Plus, LogOut, BarChart3, Eye, Edit, Trash2, MapPin, Loader2
 } from 'lucide-react';
 import { PriceChart, ConfidenceChart, PricePerSqFtChart } from '../components/AnalyticsCharts';
 
 interface Property {
-  _id: string;
-  title: string;
-  location: string;
-  price: number;
-  status: string;
-  bedrooms: number;
-  bathrooms: number;
-  area: number;
-  image: string;
+  _id: string; title: string; location: string;
+  price: number; status: string; bedrooms: number;
+  bathrooms: number; area: number; image: string;
 }
+interface User { _id: string; name: string; email: string; }
 
-interface User {
-  _id: string;
-  name: string;
-  email: string;
-}
+const statusConfig: Record<string, { bg: string; text: string; dot: string }> = {
+  Available:   { bg: 'bg-emerald-50',   text: 'text-emerald-700',  dot: 'bg-emerald-500' },
+  Occupied:    { bg: 'bg-red-50',        text: 'text-red-700',      dot: 'bg-red-500' },
+  Maintenance: { bg: 'bg-amber-50',      text: 'text-amber-700',    dot: 'bg-amber-500' },
+};
 
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -46,290 +27,190 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check authentication
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
-    
-    if (!token || !userData) {
-      navigate('/auth');
-      return;
-    }
-
+    if (!token || !userData) { navigate('/auth'); return; }
     setUser(JSON.parse(userData));
-    
-    // Fetch user properties
     fetchUserProperties();
   }, [navigate]);
 
   const fetchUserProperties = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/properties/user', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
+      const res = await fetch('/api/properties/user', {
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        setProperties(data.properties || []);
-      }
-    } catch (error) {
-      console.error('Error fetching properties:', error);
-    } finally {
-      setIsLoading(false);
-    }
+      if (res.ok) { const data = await res.json(); setProperties(data.properties || []); }
+    } catch (error) { console.error('Error fetching properties:', error); }
+    finally { setIsLoading(false); }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/auth');
+    localStorage.removeItem('token'); localStorage.removeItem('user'); navigate('/auth');
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
+  const formatPrice = (price: number) =>
+    new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(price);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Available': return 'text-emerald-600 bg-emerald-50';
-      case 'Occupied': return 'text-red-600 bg-red-50';
-      case 'Maintenance': return 'text-amber-600 bg-amber-50';
-      default: return 'text-slate-600 bg-slate-50';
-    }
-  };
+  const stats = [
+    { icon: Building, label: 'Total Properties', value: properties.length, color: 'text-primary', bg: 'bg-[#fff0f3]' },
+    { icon: TrendingUp, label: 'Monthly Revenue', value: formatPrice(properties.reduce((s, p) => s + p.price, 0)), color: 'text-emerald-600', bg: 'bg-emerald-50' },
+    { icon: Users, label: 'Available Now', value: properties.filter(p => p.status === 'Available').length, color: 'text-blue-600', bg: 'bg-blue-50' },
+    { icon: DollarSign, label: 'Avg Price/Night', value: formatPrice(properties.length > 0 ? properties.reduce((s, p) => s + p.price, 0) / properties.length : 0), color: 'text-amber-600', bg: 'bg-amber-50' },
+  ];
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-primary/30 border-t-primary/30 animate-spin"></div>
-      </div>
-    );
-  }
+  if (isLoading) return (
+    <div className="min-h-screen bg-[#f7f7f7] flex items-center justify-center">
+      <Loader2 className="w-8 h-8 text-primary animate-spin" />
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
-      {/* Navigation */}
-      <nav className="bg-white border-b border-slate-200 shadow-sm">
+    <div className="min-h-screen bg-[#f7f7f7]">
+      {/* Nav */}
+      <nav className="bg-white border-b border-[#e0e0e0]" style={{ boxShadow: '0 1px 0 rgba(0,0,0,0.06)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
+          <div className="flex items-center justify-between h-[68px]">
             <Link to="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center">
-                <Building className="w-4 h-4 text-white" strokeWidth={2.5} />
+              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+                <Home className="w-4 h-4 text-white" strokeWidth={2.5} />
               </div>
-              <span className="font-display font-700 text-lg text-slate-800">
+              <span className="font-display font-700 text-lg text-[#1a1a1a]">
                 Stay<span className="text-primary">Ready</span>
               </span>
             </Link>
-
-            {/* User Menu */}
             <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-sm text-slate-600">Welcome back,</p>
-                <p className="font-display font-600 text-slate-900">{user?.name}</p>
+              <div className="hidden sm:block text-right">
+                <p className="text-xs text-[#717171]">Welcome back</p>
+                <p className="font-display font-600 text-sm text-[#1a1a1a]">{user?.name}</p>
               </div>
-              
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-slate-600 hover:text-primary hover:bg-slate-50 transition-all duration-200"
-              >
-                <LogOut className="w-4 h-4" />
-                Logout
+              <button onClick={handleLogout}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm text-[#717171] hover:text-primary hover:bg-[#f7f7f7] transition-all duration-150 font-medium">
+                <LogOut className="w-4 h-4" /> Logout
               </button>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Dashboard Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-2xl shadow-lg border border-slate-100 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary to-blue-600 rounded-xl flex items-center justify-center">
-                <Building className="w-6 h-6 text-white" />
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {stats.map((stat) => (
+            <div key={stat.label} className="bg-white rounded-2xl p-5 border border-[#e0e0e0]">
+              <div className={`w-10 h-10 ${stat.bg} rounded-xl flex items-center justify-center mb-3`}>
+                <stat.icon className={`w-5 h-5 ${stat.color}`} />
               </div>
-              <div className="text-right">
-                <p className="text-2xl font-display font-700 text-slate-900">{properties.length}</p>
-                <p className="text-sm text-slate-600">Total Properties</p>
-              </div>
+              <p className="font-display font-700 text-xl text-[#1a1a1a] leading-none">{stat.value}</p>
+              <p className="text-xs text-[#717171] mt-1">{stat.label}</p>
             </div>
-          </div>
-          
-          <div className="bg-white rounded-2xl shadow-lg border border-slate-100 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-right">
-                <p className="text-2xl font-display font-700 text-slate-900">
-                  {formatPrice(properties.reduce((sum, p) => sum + p.price, 0))}
-                </p>
-                <p className="text-sm text-slate-600">Monthly Revenue</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-2xl shadow-lg border border-slate-100 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                <Users className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-right">
-                <p className="text-2xl font-display font-700 text-slate-900">
-                  {properties.filter(p => p.status === 'Available').length}
-                </p>
-                <p className="text-sm text-slate-600">Available Now</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-2xl shadow-lg border border-slate-100 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center">
-                <DollarSign className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-right">
-                <p className="text-2xl font-display font-700 text-slate-900">
-                  {formatPrice(properties.length > 0 ? properties.reduce((sum, p) => sum + p.price, 0) / properties.length : 0)}
-                </p>
-                <p className="text-sm text-slate-600">Avg. Price/Night</p>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
 
-        {/* Properties Section */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="font-display font-700 text-2xl text-slate-900">Your Properties</h2>
-            <button
-              onClick={() => setShowAddProperty(!showAddProperty)}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-primary transition-all duration-300 shadow-lg hover:shadow-xl text-white font-display font-600"
-            >
-              <Plus className="w-5 h-5" />
-              Add Property
+        {/* Properties header */}
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="font-display font-700 text-xl text-[#1a1a1a]">Your Properties</h2>
+          <button
+            onClick={() => setShowAddProperty(!showAddProperty)}
+            className="btn-primary flex items-center gap-2 px-5 py-2.5 text-sm rounded-xl"
+          >
+            <Plus className="w-4 h-4" /> Add Property
+          </button>
+        </div>
+
+        {/* Empty state */}
+        {properties.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-[#e0e0e0] text-center py-20 px-6">
+            <div className="w-16 h-16 bg-[#f7f7f7] rounded-full flex items-center justify-center mx-auto mb-4">
+              <Building className="w-8 h-8 text-[#717171]" />
+            </div>
+            <h3 className="font-display font-600 text-lg text-[#1a1a1a] mb-2">No properties yet</h3>
+            <p className="text-[#717171] text-sm mb-6 max-w-xs mx-auto leading-relaxed">
+              Add your first property to start managing your portfolio with AI-powered pricing insights.
+            </p>
+            <button onClick={() => setShowAddProperty(true)}
+              className="btn-primary inline-flex items-center gap-2 px-6 py-3 text-sm rounded-xl font-display font-600">
+              <Plus className="w-4 h-4" /> Add Your First Property
             </button>
           </div>
-
-          {/* Properties Grid */}
-          {properties.length === 0 ? (
-            <div className="text-center py-16">
-              <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Building className="w-10 h-10 text-slate-400" />
-              </div>
-              <h3 className="font-display font-600 text-xl text-slate-900 mb-2">No Properties Yet</h3>
-              <p className="text-slate-600 mb-6 max-w-md mx-auto">
-                Get started by adding your first property to begin managing your real estate portfolio with AI-powered insights.
-              </p>
-              <button
-                onClick={() => setShowAddProperty(true)}
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-primary transition-all duration-300 shadow-xl hover:shadow-2xl text-white font-display font-600"
-              >
-                <Plus className="w-5 h-5" />
-                Add Your First Property
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {properties.map((property) => (
-                <div key={property._id} className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden hover:shadow-xl transition-all duration-300">
-                  {/* Property Image */}
-                  <div className="h-48 bg-slate-100 relative">
-                    <img 
-                      src={property.image || 'https://images.unsplash.com/photo-1560444815-e8407358525?w=400&h=300&fit=crop'} 
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {properties.map((property) => {
+              const sc = statusConfig[property.status] ?? { bg: 'bg-[#f7f7f7]', text: 'text-[#717171]', dot: 'bg-[#717171]' };
+              return (
+                <div key={property._id} className="bg-white rounded-2xl border border-[#e0e0e0] overflow-hidden hover:border-[#1a1a1a]/20 transition-all duration-200">
+                  <div className="h-44 relative overflow-hidden">
+                    <img
+                      src={property.image || 'https://images.unsplash.com/photo-1560444815-e8407358525?w=400&h=300&fit=crop'}
                       alt={property.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                     />
-                    <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-display font-600 ${getStatusColor(property.status)}`}>
-                      {property.status}
+                    <div className={`absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full ${sc.bg}`}>
+                      <div className={`w-1.5 h-1.5 rounded-full ${sc.dot}`} />
+                      <span className={`text-xs font-600 font-display ${sc.text}`}>{property.status}</span>
                     </div>
                   </div>
-                  
-                  {/* Property Details */}
-                  <div className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <h3 className="font-display font-600 text-lg text-slate-900 mb-2">{property.title}</h3>
-                      <div className="flex gap-2">
-                        <button className="p-2 rounded-lg hover:bg-slate-50 transition-colors">
-                          <Eye className="w-4 h-4 text-slate-600" />
-                        </button>
-                        <button className="p-2 rounded-lg hover:bg-slate-50 transition-colors">
-                          <Edit className="w-4 h-4 text-slate-600" />
-                        </button>
-                        <button className="p-2 rounded-lg hover:bg-red-50 transition-colors">
-                          <Trash2 className="w-4 h-4 text-red-600" />
-                        </button>
+                  <div className="p-5">
+                    <div className="flex items-start justify-between mb-3">
+                      <h3 className="font-display font-600 text-[#1a1a1a] leading-snug flex-1 pr-2">{property.title}</h3>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button className="p-1.5 rounded-lg hover:bg-[#f7f7f7] transition-colors"><Eye className="w-3.5 h-3.5 text-[#717171]" /></button>
+                        <button className="p-1.5 rounded-lg hover:bg-[#f7f7f7] transition-colors"><Edit className="w-3.5 h-3.5 text-[#717171]" /></button>
+                        <button className="p-1.5 rounded-lg hover:bg-red-50 transition-colors"><Trash2 className="w-3.5 h-3.5 text-red-500" /></button>
                       </div>
                     </div>
-                    
-                    <div className="flex items-center gap-4 text-sm text-slate-600 mb-4">
-                      <div className="flex items-center gap-1">
-                        <MapPin className="w-4 h-4" />
-                        <span>{property.location}</span>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-1">
-                          <Bed className="w-4 h-4" />
-                          <span>{property.bedrooms}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Bath className="w-4 h-4" />
-                          <span>{property.bathrooms}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Home className="w-4 h-4" />
-                          <span>{property.area} sqft</span>
-                        </div>
-                      </div>
+                    <div className="flex items-center gap-1 text-xs text-[#717171] mb-3">
+                      <MapPin className="w-3 h-3" />{property.location}
                     </div>
-                    
-                    <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                    <div className="flex items-center gap-3 text-xs text-[#717171] mb-4">
+                      <span className="flex items-center gap-1"><Bed className="w-3 h-3" />{property.bedrooms} beds</span>
+                      <span className="flex items-center gap-1"><Bath className="w-3 h-3" />{property.bathrooms} baths</span>
+                      <span className="flex items-center gap-1"><Home className="w-3 h-3" />{property.area} sqft</span>
+                    </div>
+                    <div className="flex items-center justify-between pt-4 border-t border-[#e0e0e0]">
                       <div>
-                        <p className="text-2xl font-display font-700 text-primary">
-                          {formatPrice(property.price)}
-                        </p>
-                        <p className="text-sm text-slate-600">per night</p>
+                        <p className="font-display font-700 text-base text-primary">{formatPrice(property.price)}</p>
+                        <p className="text-xs text-[#717171]">per night</p>
                       </div>
-                      <Link 
-                        to={`/property/${property._id}`}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white hover:bg-blue-600 transition-colors font-display font-600"
-                      >
-                        View Details
-                        <BarChart3 className="w-4 h-4" />
+                      <Link to={`/property/${property._id}`}
+                        className="btn-primary flex items-center gap-1.5 px-4 py-2 text-xs rounded-lg">
+                        Details <BarChart3 className="w-3.5 h-3.5" />
                       </Link>
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+              );
+            })}
+          </div>
+        )}
 
-        {/* Quick Actions */}
-        <div className="fixed bottom-8 right-8 flex flex-col gap-3">
-          <Link
-            to="/prediction"
-            className="w-14 h-14 bg-gradient-to-br from-primary to-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            <TrendingUp className="w-6 h-6" />
-          </Link>
-          <Link
-            to="/settings"
-            className="w-14 h-14 bg-white rounded-2xl border border-slate-200 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            <Settings className="w-6 h-6 text-slate-600" />
-          </Link>
-        </div>
+        {/* Analytics */}
+        {properties.length > 0 && (
+          <div className="mt-10">
+            <h2 className="font-display font-700 text-xl text-[#1a1a1a] mb-6">Analytics Overview</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              <div className="bg-white rounded-2xl border border-[#e0e0e0] p-5">
+                <PriceChart prediction={{ predictedPrice: properties[0]?.price ?? 0, confidence: 0.85 }} />
+              </div>
+              <div className="bg-white rounded-2xl border border-[#e0e0e0] p-5">
+                <ConfidenceChart prediction={{ predictedPrice: properties[0]?.price ?? 0, confidence: 0.85 }} />
+              </div>
+              <div className="bg-white rounded-2xl border border-[#e0e0e0] p-5">
+                <PricePerSqFtChart prediction={{ predictedPrice: properties[0]?.price ?? 0, confidence: 0.85 }} area={properties[0]?.area ?? 500} />
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* FAB */}
+      <div className="fixed bottom-6 right-6 flex flex-col gap-3">
+        <Link to="/prediction"
+          className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white shadow-btn hover:shadow-btn-hover transition-all duration-150"
+          title="AI Pricing">
+          <TrendingUp className="w-5 h-5" />
+        </Link>
       </div>
     </div>
   );

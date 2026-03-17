@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, Star, Bed, Bath, Maximize, Users, Minus, Plus, Shield, ChevronRight } from 'lucide-react';
+import { X, Star, Users, Minus, Plus, Shield, ChevronRight, Loader2 } from 'lucide-react';
 
 interface Property {
   id: string;
@@ -25,10 +25,10 @@ const BookingModal: React.FC<BookingModalProps> = ({ property, isOpen, onClose }
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [guests, setGuests] = useState(1);
+  const [isBooking, setIsBooking] = useState(false);
   const navigate = useNavigate();
   const backdropRef = useRef<HTMLDivElement>(null);
 
-  // Trap scroll
   useEffect(() => {
     if (isOpen) document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = ''; };
@@ -36,9 +36,7 @@ const BookingModal: React.FC<BookingModalProps> = ({ property, isOpen, onClose }
 
   const calculateNights = () => {
     if (!checkIn || !checkOut) return 0;
-    const start = new Date(checkIn);
-    const end = new Date(checkOut);
-    const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+    const nights = Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / 86400000);
     return nights > 0 ? nights : 0;
   };
 
@@ -49,102 +47,85 @@ const BookingModal: React.FC<BookingModalProps> = ({ property, isOpen, onClose }
   const total = subtotal + cleaningFee + serviceFee;
 
   const handleBooking = async () => {
+    setIsBooking(true);
     try {
-      const bookingData = {
-        propertyId: property.id,
-        checkIn,
-        checkOut,
-        guests,
-        paymentMethod: 'demo' // Using demo payment method
-      };
-      
       const response = await fetch('/api/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bookingData)
+        body: JSON.stringify({ propertyId: property.id, checkIn, checkOut, guests, paymentMethod: 'demo' }),
       });
-      
       const result = await response.json();
       console.log('Booking created:', result);
       navigate('/booking-confirmed');
       onClose();
     } catch (error) {
       console.error('Failed to create booking:', error);
-      // Handle error (show message to user)
+    } finally {
+      setIsBooking(false);
     }
   };
 
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === backdropRef.current) onClose();
-  };
-
   if (!isOpen) return null;
-
   const today = new Date().toISOString().split('T')[0];
 
   return (
     <div
       ref={backdropRef}
-      onClick={handleBackdropClick}
+      onClick={(e) => { if (e.target === backdropRef.current) onClose(); }}
       className="modal-overlay fixed inset-0 z-[100] flex items-center justify-center p-4"
     >
-      <div className="bg-white rounded-3xl shadow-modal w-full max-w-lg max-h-[92vh] overflow-y-auto animate-fade-in-scale">
+      <div className="bg-white rounded-2xl w-full max-w-[480px] max-h-[92vh] overflow-y-auto animate-fade-in-scale"
+        style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.24)' }}>
+
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-brand-border sticky top-0 bg-white rounded-t-3xl">
-          <h2 className="font-display font-700 text-lg text-brand-charcoal">Reserve your stay</h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e0e0e0] sticky top-0 bg-white rounded-t-2xl z-10">
+          <h2 className="font-display font-700 text-base text-[#1a1a1a]">Reserve your stay</h2>
           <button
             onClick={onClose}
-            className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-brand-surface transition-colors duration-150"
+            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#f7f7f7] transition-colors"
+            aria-label="Close"
           >
-            <X className="w-5 h-5 text-brand-charcoal" />
+            <X className="w-4 h-4 text-[#1a1a1a]" />
           </button>
         </div>
 
         <div className="px-6 py-5 space-y-5">
           {/* Property preview */}
-          <div className="flex items-center gap-4 p-4 bg-brand-surface rounded-2xl">
-            <img
-              src={property.image}
-              alt={property.title}
-              className="w-20 h-16 object-cover rounded-xl shrink-0"
-            />
+          <div className="flex items-center gap-4 p-4 bg-[#f7f7f7] rounded-xl">
+            <img src={property.image} alt={property.title} className="w-16 h-14 object-cover rounded-xl shrink-0" />
             <div className="min-w-0">
-              <p className="font-display font-600 text-sm text-brand-charcoal line-clamp-1">{property.title}</p>
-              <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{property.location}</p>
+              <p className="font-display font-600 text-sm text-[#1a1a1a] line-clamp-1">{property.title}</p>
+              <p className="text-xs text-[#717171] mt-0.5 line-clamp-1">{property.location}</p>
               <div className="flex items-center gap-1 mt-1">
-                <Star className="w-3 h-3 fill-brand-charcoal text-brand-charcoal" />
-                <span className="text-xs font-semibold text-brand-charcoal">4.87</span>
-                <span className="text-xs text-muted-foreground">· 42 reviews</span>
+                <Star className="w-3 h-3 fill-[#1a1a1a] text-[#1a1a1a]" />
+                <span className="text-xs font-semibold text-[#1a1a1a]">4.87</span>
+                <span className="text-xs text-[#717171]">· 42 reviews</span>
               </div>
             </div>
           </div>
 
-          {/* Date picker */}
+          {/* Dates */}
           <div>
-            <p className="font-display font-600 text-sm text-brand-charcoal mb-3">Dates</p>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5">
-                  Check-in
-                </label>
+            <p className="form-label mb-3">Select dates</p>
+            <div className="grid grid-cols-2 border border-[#dddddd] rounded-xl overflow-hidden">
+              <div className="p-3 border-r border-[#dddddd]">
+                <div className="text-[10px] font-700 uppercase tracking-widest text-[#1a1a1a] mb-1">Check-in</div>
                 <input
                   type="date"
                   value={checkIn}
                   min={today}
                   onChange={(e) => setCheckIn(e.target.value)}
-                  className="w-full px-4 py-3 border border-brand-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-150 text-brand-charcoal font-medium"
+                  className="w-full text-sm text-[#1a1a1a] focus:outline-none bg-transparent font-medium"
                 />
               </div>
-              <div>
-                <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1.5">
-                  Check-out
-                </label>
+              <div className="p-3">
+                <div className="text-[10px] font-700 uppercase tracking-widest text-[#1a1a1a] mb-1">Check-out</div>
                 <input
                   type="date"
                   value={checkOut}
                   min={checkIn || today}
                   onChange={(e) => setCheckOut(e.target.value)}
-                  className="w-full px-4 py-3 border border-brand-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-150 text-brand-charcoal font-medium"
+                  className="w-full text-sm text-[#1a1a1a] focus:outline-none bg-transparent font-medium"
                 />
               </div>
             </div>
@@ -152,81 +133,80 @@ const BookingModal: React.FC<BookingModalProps> = ({ property, isOpen, onClose }
 
           {/* Guests */}
           <div>
-            <p className="font-display font-600 text-sm text-brand-charcoal mb-3">Guests</p>
-            <div className="flex items-center justify-between px-4 py-3 border border-brand-border rounded-xl">
-              <div className="flex items-center gap-2 text-sm text-brand-charcoal font-medium">
-                <Users className="w-4 h-4 text-muted-foreground" />
+            <p className="form-label mb-3">Guests</p>
+            <div className="flex items-center justify-between px-4 py-3 border border-[#dddddd] rounded-xl">
+              <div className="flex items-center gap-2 text-sm text-[#1a1a1a] font-medium">
+                <Users className="w-4 h-4 text-[#717171]" />
                 {guests} guest{guests !== 1 ? 's' : ''}
               </div>
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setGuests(Math.max(1, guests - 1))}
-                  className="w-8 h-8 flex items-center justify-center rounded-full border border-brand-border hover:border-brand-charcoal transition-colors duration-150 disabled:opacity-40"
                   disabled={guests <= 1}
+                  className="w-7 h-7 flex items-center justify-center rounded-full border border-[#dddddd] hover:border-[#1a1a1a] transition-colors disabled:opacity-30"
                 >
-                  <Minus className="w-3.5 h-3.5" />
+                  <Minus className="w-3 h-3" />
                 </button>
-                <span className="w-5 text-center font-semibold text-brand-charcoal text-sm">{guests}</span>
+                <span className="w-4 text-center font-semibold text-sm text-[#1a1a1a]">{guests}</span>
                 <button
                   onClick={() => setGuests(Math.min(property.bedrooms * 2, guests + 1))}
-                  className="w-8 h-8 flex items-center justify-center rounded-full border border-brand-border hover:border-brand-charcoal transition-colors duration-150"
+                  className="w-7 h-7 flex items-center justify-center rounded-full border border-[#dddddd] hover:border-[#1a1a1a] transition-colors"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-3 h-3" />
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Price Breakdown */}
+          {/* Price breakdown */}
           {nights > 0 && (
-            <div className="border border-brand-border rounded-2xl overflow-hidden">
-              <div className="px-5 py-4 bg-brand-surface border-b border-brand-border">
-                <p className="font-display font-600 text-sm text-brand-charcoal">Price Breakdown</p>
+            <div className="border border-[#e0e0e0] rounded-xl overflow-hidden">
+              <div className="px-5 py-3 bg-[#f7f7f7] border-b border-[#e0e0e0]">
+                <p className="font-display font-600 text-sm text-[#1a1a1a]">Price breakdown</p>
               </div>
               <div className="px-5 py-4 space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-brand-charcoal">
-                    ${property.price} × {nights} night{nights !== 1 ? 's' : ''}
-                  </span>
-                  <span className="font-medium text-brand-charcoal">${subtotal}</span>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#1a1a1a]">${property.price} × {nights} night{nights !== 1 ? 's' : ''}</span>
+                  <span className="font-medium text-[#1a1a1a]">${subtotal}</span>
                 </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Cleaning fee</span>
-                  <span className="text-brand-charcoal">${cleaningFee}</span>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#717171]">Cleaning fee</span>
+                  <span className="text-[#1a1a1a]">${cleaningFee}</span>
                 </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">StayReady service fee</span>
-                  <span className="text-brand-charcoal">${serviceFee}</span>
+                <div className="flex justify-between text-sm">
+                  <span className="text-[#717171]">StayReady service fee</span>
+                  <span className="text-[#1a1a1a]">${serviceFee}</span>
                 </div>
-                <div className="h-px bg-brand-border" />
-                <div className="flex items-center justify-between">
-                  <span className="font-display font-700 text-base text-brand-charcoal">Total</span>
-                  <span className="font-display font-700 text-base text-brand-charcoal">${total}</span>
+                <div className="h-px bg-[#e0e0e0]" />
+                <div className="flex justify-between">
+                  <span className="font-display font-700 text-sm text-[#1a1a1a]">Total before taxes</span>
+                  <span className="font-display font-700 text-sm text-[#1a1a1a]">${total}</span>
                 </div>
               </div>
             </div>
           )}
 
           {nights === 0 && checkIn && (
-            <p className="text-sm text-muted-foreground text-center py-2">
-              Select check-out date to see pricing
-            </p>
+            <p className="text-sm text-[#717171] text-center py-1">Select a check-out date to see pricing</p>
           )}
 
           {/* Reserve button */}
           <button
             onClick={handleBooking}
-            disabled={!checkIn || !checkOut || nights <= 0}
-            className="btn-primary w-full py-4 text-base rounded-xl font-display font-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            disabled={!checkIn || !checkOut || nights <= 0 || isBooking}
+            className="btn-primary w-full py-4 text-base rounded-xl font-display font-600 flex items-center justify-center gap-2"
           >
-            {nights > 0 ? `Reserve · $${total}` : 'Reserve'}
-            <ChevronRight className="w-4 h-4" />
+            {isBooking ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Reserving...</>
+            ) : (
+              <>{nights > 0 ? `Reserve · $${total}` : 'Reserve'}<ChevronRight className="w-4 h-4" /></>
+            )}
           </button>
 
-          {/* Trust signal */}
-          <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+          {/* Trust */}
+          <div className="flex items-center justify-center gap-2 text-xs text-[#717171]">
             <Shield className="w-3.5 h-3.5 text-primary" />
-            <span>You won't be charged yet · Free cancellation 24h before check-in</span>
+            You won't be charged yet · Free cancellation 24h before check-in
           </div>
         </div>
       </div>

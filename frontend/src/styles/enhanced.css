@@ -1,123 +1,91 @@
-/* =============================================
-   Enhanced Premium Styling
-   Indian-inspired luxury design
-   ============================================= */
+/* StayReady — Enhanced Utility Overrides */
 
-/* Enhanced utility classes */
 .shadow-luxury {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.12);
 }
-
 .shadow-card {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 4px 8px rgba(0,0,0,0.04);
+}
+.shadow-modal {
+  box-shadow: 0 20px 60px rgba(0,0,0,0.24);
 }
 
-.property-card {
-  background-color: white;
-  border: 1px solid rgb(226 232 240);
-  border-radius: 1rem;
-  overflow: hidden;
-  transition: all 0.3s ease;
+/* Reset the broken btn-primary from previous enhanced.css */
+.btn-primary {
+  background: hsl(349 100% 60%) !important;
+  color: white !important;
+  font-weight: 600;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(255,56,92,0.45);
+  transform: none;
+  transition: background 150ms ease, box-shadow 150ms ease, transform 100ms ease;
 }
-
-.property-card:hover {
-  border-color: rgb(99 102 241 / 0.3);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  transform: translateY(-0.25rem);
-}
-
-.card-image {
-  transition: transform 0.3s ease;
-}
-
-.property-card:hover .card-image {
-  transform: scale(1.05);
+.btn-primary:hover {
+  background: hsl(349 100% 54%) !important;
+  transform: none;
+  box-shadow: 0 6px 20px rgba(255,56,92,0.6);
 }
 
 .price-tag {
-  font-family: 'display', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-weight: 600;
-  font-size: 1rem;
-  color: #ff9900;
+  font-size: 0.9375rem;
+  color: #1a1a1a;
 }
 
 .badge-soldout {
-  background-color: #dc2626;
-  color: white;
-  padding: 0.5rem 0.75rem;
+  background: #f7f7f7;
+  color: #717171;
+  padding: 3px 12px;
   font-size: 0.75rem;
   font-weight: 600;
   border-radius: 9999px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+  box-shadow: none;
 }
 
 .badge-available {
-  background-color: #34c759;
-  color: white;
-  padding: 0.5rem 0.75rem;
+  background: #f0faf4;
+  color: #1a7a3c;
+  padding: 3px 12px;
   font-size: 0.75rem;
   font-weight: 600;
   border-radius: 9999px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #c6e9d2;
+  box-shadow: none;
 }
 
 .star-rating {
   display: flex;
   align-items: center;
-  gap: 0.125rem;
+  gap: 3px;
 }
 
-.bg-gradient-to-t {
-  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+.property-card {
+  background: white;
+  border: none !important;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 250ms ease;
 }
-
-.bg-gradient-card {
-  background: linear-gradient(135deg, hsl(var(--primary) 0%, hsl(var(--secondary) 100%)));
+.property-card:hover {
+  border: none !important;
+  box-shadow: none;
+  transform: translateY(-2px);
 }
+.property-card:hover .card-image { transform: scale(1.04); }
+.card-image { transition: transform 350ms ease; }
 
-/* Enhanced responsive design */
-@media (max-width: 640px) {
-  .property-card {
-    border-radius: 0.75rem;
-  }
-  
-  .property-card:hover {
-    transform: translateY(-0.125rem);
-  }
-}
-
-@media (min-width: 1024px) {
-  .property-card:hover {
-    transform: translateY(-0.5rem);
-  }
-}
-
-/* Premium button enhancements */
-.btn-primary {
-  background: linear-gradient(to right, #ff9900, #6366f1);
-  color: white;
-  font-weight: 600;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.75rem;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  transform: scale(1);
-  transition: all 0.3s ease;
-}
-
-.btn-primary:hover {
-  background: linear-gradient(to right, #6366f1, #ff9900);
-  transform: scale(1.05);
-  box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.15), 0 15px 15px -5px rgba(0, 0, 0, 0.08);
-}
-
-/* Premium loading states */
 .loading-shimmer {
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
-
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
+  0%   { background-position: -200% 0; }
   100% { background-position: 200% 0; }
+}
+
+@media (max-width: 640px) {
+  .property-card:hover { transform: translateY(-1px); }
 }

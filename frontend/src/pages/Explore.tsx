@@ -22,14 +22,14 @@ interface Property {
 }
 
 const CATEGORY_FILTERS = [
-  { label: 'All', emoji: '🌍' },
-  { label: 'Beach', emoji: '🏖️' },
-  { label: 'Mountain', emoji: '🏔️' },
-  { label: 'City', emoji: '🏙️' },
-  { label: 'Luxury', emoji: '✨' },
-  { label: 'Cabin', emoji: '🏕️' },
-  { label: 'Pool', emoji: '🏊' },
-  { label: 'Farm', emoji: '🌾' },
+  { label: 'All', icon: '🌍' },
+  { label: 'Beach', icon: '🏖️' },
+  { label: 'Mountain', icon: '🏔️' },
+  { label: 'City', icon: '🏙️' },
+  { label: 'Luxury', icon: '✨' },
+  { label: 'Cabin', icon: '🏕️' },
+  { label: 'Pool', icon: '🏊' },
+  { label: 'Farm', icon: '🌾' },
 ];
 
 const Explore = () => {
@@ -40,10 +40,8 @@ const Explore = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
   const [sortBy, setSortBy] = useState('recommended');
-  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
-    // Load properties from backend API
     const loadProperties = async () => {
       try {
         setIsLoading(true);
@@ -56,7 +54,6 @@ const Explore = () => {
         setIsLoading(false);
       }
     };
-    
     loadProperties();
   }, []);
 
@@ -87,128 +84,115 @@ const Explore = () => {
     setIsModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedProperty(null);
-  };
-
   const availableCount = filtered.filter(p => p.status === 'Available').length;
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative h-[85vh] min-h-[520px] flex items-center justify-center overflow-hidden">
-        {/* Background image */}
-        <img
-          src={heroImg}
-          alt="Stunning vacation rental"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-hero" />
+    <div className="min-h-screen bg-white">
 
-        {/* Hero content */}
+      {/* ── Hero ── */}
+      <section className="relative h-[82vh] min-h-[500px] flex items-center justify-center overflow-hidden">
+        <img src={heroImg} alt="Vacation rental" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.54) 100%)' }} />
+
         <div className="relative z-10 text-center px-4 w-full max-w-3xl mx-auto animate-fade-in">
-          <p className="text-white/80 text-sm font-display font-600 uppercase tracking-widest mb-4">
+          <p className="text-white/80 text-xs font-display font-600 uppercase tracking-[0.2em] mb-5">
             Welcome to StayReady
           </p>
-          <h1 className="font-display font-700 text-4xl sm:text-5xl lg:text-6xl text-white leading-tight mb-4">
+          <h1 className="font-display font-800 text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.1] mb-5">
             Find your perfect<br />
             <span className="text-primary">place to stay</span>
           </h1>
-          <p className="text-white/75 text-lg mb-10 max-w-lg mx-auto">
+          <p className="text-white/70 text-base sm:text-lg mb-10 max-w-md mx-auto leading-relaxed">
             Discover thousands of unique homes, villas, and apartments around the world.
           </p>
 
-          {/* Hero Search Bar */}
-          <div className="bg-white rounded-2xl shadow-modal overflow-hidden max-w-2xl mx-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-brand-border">
-              {/* Location */}
+          {/* Search bar */}
+          <div className="bg-white rounded-2xl overflow-hidden max-w-2xl mx-auto" style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.24)' }}>
+            <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-[#e0e0e0]">
               <div className="flex items-center gap-3 px-5 py-4">
-                <MapPin className="w-5 h-5 text-primary shrink-0" />
-                <div className="text-left min-w-0">
-                  <div className="text-xs font-display font-600 text-brand-charcoal uppercase tracking-wide">Where</div>
+                <MapPin className="w-4 h-4 text-primary shrink-0" />
+                <div className="text-left min-w-0 flex-1">
+                  <div className="text-[10px] font-700 uppercase tracking-widest text-[#1a1a1a]">Where</div>
                   <input
                     type="text"
                     placeholder="Search destinations"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="block w-full text-sm text-brand-charcoal placeholder-muted-foreground focus:outline-none mt-0.5"
+                    className="block w-full text-sm text-[#1a1a1a] placeholder-[#717171] focus:outline-none mt-0.5 bg-transparent"
                   />
                 </div>
               </div>
-              {/* Check in */}
               <div className="flex items-center gap-3 px-5 py-4">
-                <Calendar className="w-5 h-5 text-primary shrink-0" />
+                <Calendar className="w-4 h-4 text-primary shrink-0" />
                 <div className="text-left">
-                  <div className="text-xs font-display font-600 text-brand-charcoal uppercase tracking-wide">Check in</div>
-                  <div className="text-sm text-muted-foreground mt-0.5">Add dates</div>
+                  <div className="text-[10px] font-700 uppercase tracking-widest text-[#1a1a1a]">Check in</div>
+                  <div className="text-sm text-[#717171] mt-0.5">Add dates</div>
                 </div>
               </div>
-              {/* Guests + Search */}
               <div className="flex items-center gap-3 px-5 py-4">
-                <Users className="w-5 h-5 text-primary shrink-0" />
+                <Users className="w-4 h-4 text-primary shrink-0" />
                 <div className="text-left flex-1">
-                  <div className="text-xs font-display font-600 text-brand-charcoal uppercase tracking-wide">Guests</div>
-                  <div className="text-sm text-muted-foreground mt-0.5">Add guests</div>
+                  <div className="text-[10px] font-700 uppercase tracking-widest text-[#1a1a1a]">Guests</div>
+                  <div className="text-sm text-[#717171] mt-0.5">Add guests</div>
                 </div>
-                <button className="btn-primary px-5 py-2.5 text-sm rounded-xl shrink-0 flex items-center gap-2">
-                  <Search className="w-4 h-4" />
-                  <span className="hidden sm:inline">Search</span>
+                <button className="btn-primary px-5 py-2.5 text-sm rounded-xl shrink-0 flex items-center gap-1.5">
+                  <Search className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline font-display font-600">Search</span>
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce">
-          <ChevronDown className="w-5 h-5 text-white/60" />
+        {/* Scroll cue */}
+        <div className="absolute bottom-7 left-1/2 -translate-x-1/2 animate-bounce">
+          <ChevronDown className="w-5 h-5 text-white/50" />
         </div>
       </section>
 
-      {/* Listing Section */}
+      {/* ── Listing ── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {/* Category filter chips */}
-        <div className="flex items-center gap-3 overflow-x-auto pb-4 scrollbar-hide mb-6">
+
+        {/* Category filter bar */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-5 scrollbar-hide border-b border-[#e0e0e0] mb-8">
           {CATEGORY_FILTERS.map((cat) => (
             <button
               key={cat.label}
               onClick={() => setActiveFilter(cat.label)}
-              className={`filter-chip shrink-0 flex items-center gap-1.5 ${activeFilter === cat.label ? 'active' : ''}`}
+              className={`filter-chip shrink-0 flex items-center gap-1.5 text-sm ${activeFilter === cat.label ? 'active' : ''}`}
             >
-              <span>{cat.emoji}</span>
+              <span className="text-base leading-none">{cat.icon}</span>
               <span>{cat.label}</span>
             </button>
           ))}
 
-          <div className="w-px h-8 bg-brand-border mx-2 shrink-0" />
+          <div className="w-px h-6 bg-[#e0e0e0] mx-1 shrink-0" />
 
-          {/* Sort / Filters button */}
           <button
-            onClick={() => setShowFilters(!showFilters)}
+            onClick={() => setSortBy(sortBy === 'recommended' ? 'price-asc' : 'recommended')}
             className="filter-chip shrink-0 flex items-center gap-2"
           >
-            <SlidersHorizontal className="w-4 h-4" />
+            <SlidersHorizontal className="w-3.5 h-3.5" />
             Filters
           </button>
         </div>
 
-        {/* Sort + result count */}
+        {/* Result count + Sort */}
         <div className="flex items-center justify-between mb-8">
           <div>
             {!isLoading && (
-              <p className="text-sm text-muted-foreground">
-                <span className="font-display font-600 text-brand-charcoal">{availableCount} available</span>
-                {' '}of {sorted.length} properties
+              <p className="text-sm text-[#717171]">
+                <span className="font-display font-600 text-[#1a1a1a]">{availableCount} available</span>
+                {' '}of {sorted.length} stays
               </p>
             )}
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground hidden sm:inline">Sort by:</span>
+            <span className="text-xs text-[#717171] hidden sm:inline">Sort:</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="text-sm font-medium text-brand-charcoal border border-brand-border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary bg-white cursor-pointer"
+              className="text-sm font-medium text-[#1a1a1a] border border-[#dddddd] rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary bg-white cursor-pointer"
             >
               <option value="recommended">Recommended</option>
               <option value="price-asc">Price: Low to High</option>
@@ -218,7 +202,7 @@ const Explore = () => {
           </div>
         </div>
 
-        {/* Property Grid */}
+        {/* Grid */}
         {isLoading ? (
           <PropertySkeleton count={8} />
         ) : sorted.length === 0 ? (
@@ -227,7 +211,7 @@ const Explore = () => {
             onClear={() => { setSearchQuery(''); setActiveFilter('All'); }}
           />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10 animate-fade-in">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-5 gap-y-10 animate-fade-in">
             {sorted.map((property) => (
               <PropertyCard
                 key={property.id}
@@ -239,13 +223,8 @@ const Explore = () => {
         )}
       </section>
 
-      {/* Booking Modal */}
       {selectedProperty && (
-        <BookingModal
-          property={selectedProperty}
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-        />
+        <BookingModal property={selectedProperty} isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setSelectedProperty(null); }} />
       )}
 
       <Footer />

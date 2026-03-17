@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Menu, User, Globe, Home } from 'lucide-react';
+import { Menu, User, Home, X } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
-  const isHome = location.pathname === '/' || location.pathname === '/explore';
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -15,140 +14,109 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => { setMenuOpen(false); }, [location]);
+
+  const navLinks = [
+    { to: '/', label: 'Dashboard' },
+    { to: '/explore', label: 'Browse' },
+    { to: '/prediction', label: 'AI Pricing' },
+    { to: '/host', label: 'Manage' },
+  ];
+
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-150 ${
-        scrolled ? 'navbar-glass' : 'bg-white/95 backdrop-blur-md border-b border-brand-border'
-      }`}
-    >
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 ${scrolled ? 'navbar-glass' : 'bg-white border-b border-[#e0e0e0]'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 md:h-20">
+        <div className="flex items-center justify-between h-[72px]">
+
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 shrink-0">
             <div className="w-8 h-8 rounded-lg bg-gradient-rose flex items-center justify-center">
               <Home className="w-4 h-4 text-white" strokeWidth={2.5} />
             </div>
-            <span className="font-display font-700 text-xl text-brand-charcoal hidden sm:block">
+            <span className="font-display font-700 text-xl text-[#1a1a1a] hidden sm:block">
               Stay<span className="text-primary">Ready</span>
             </span>
           </Link>
 
-          {/* Center Navigation — desktop */}
-          <div className="hidden md:flex items-center gap-6">
-            <Link
-              to="/"
-              className="text-sm font-medium text-brand-charcoal hover:text-primary transition-colors font-display"
-            >
-              Dashboard
-            </Link>
-            <Link
-              to="/prediction"
-              className="text-sm font-medium text-brand-charcoal hover:text-primary transition-colors font-display"
-            >
-              AI Price Prediction
-            </Link>
-            <Link
-              to="/host"
-              className="text-sm font-medium text-brand-charcoal hover:text-primary transition-colors font-display"
-            >
-              Property Management
-            </Link>
-            <Link
-              to="/explore"
-              className="text-sm font-medium text-brand-charcoal hover:text-primary transition-colors font-display"
-            >
-              Browse Properties
-            </Link>
-          </div>
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex items-center gap-1">
+            {navLinks.map(link => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-150 ${
+                  location.pathname === link.to
+                    ? 'text-primary bg-[#fff0f3]'
+                    : 'text-[#1a1a1a] hover:bg-[#f7f7f7]'
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
 
-          {/* Right Nav */}
+          {/* Right Controls */}
           <div className="flex items-center gap-2">
-            {/* Host link */}
             <Link
               to="/prediction"
-              className="hidden lg:flex items-center px-4 py-2 rounded-full text-sm font-medium text-white bg-primary hover:bg-primary-hover transition-colors duration-150 font-display"
+              className="hidden lg:inline-flex items-center gap-1.5 btn-primary px-4 py-2 text-sm rounded-full"
             >
-              Try AI Prediction
+              Try AI Pricing
             </Link>
 
-            {/* Globe */}
-            <button className="hidden md:flex w-10 h-10 items-center justify-center rounded-full hover:bg-brand-surface transition-colors duration-150">
-              <Globe className="w-4 h-4 text-brand-charcoal" />
-            </button>
-
-            {/* Theme Toggle */}
             <ThemeToggle />
 
-            {/* User menu pill */}
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="flex items-center gap-2 border border-brand-border rounded-full px-3 py-2 hover:shadow-sm-soft transition-all duration-150 bg-white"
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="flex items-center gap-2 border border-[#dddddd] rounded-full px-3 py-2 hover:shadow-sm-soft transition-all duration-150 bg-white"
+              aria-label="Open menu"
             >
-              <Menu className="w-4 h-4 text-brand-charcoal" />
-              <div className="w-8 h-8 rounded-full bg-brand-charcoal flex items-center justify-center">
-                <User className="w-4 h-4 text-white" />
+              {menuOpen ? <X className="w-4 h-4 text-[#1a1a1a]" /> : <Menu className="w-4 h-4 text-[#1a1a1a]" />}
+              <div className="w-7 h-7 rounded-full bg-[#1a1a1a] flex items-center justify-center">
+                <User className="w-3.5 h-3.5 text-white" />
               </div>
             </button>
           </div>
         </div>
 
-        {/* Mobile Navigation */}
-        <div className="md:hidden pb-3">
-          <div className="flex items-center gap-2 px-4">
+        {/* Mobile Nav */}
+        <div className="md:hidden flex items-center gap-2 pb-3 overflow-x-auto scrollbar-hide">
+          {navLinks.map(link => (
             <Link
-              to="/"
-              className="flex-1 py-2 text-center text-sm font-medium text-primary bg-primary/10 rounded-xl font-display"
+              key={link.to}
+              to={link.to}
+              className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                location.pathname === link.to
+                  ? 'bg-primary text-white'
+                  : 'bg-[#f7f7f7] text-[#1a1a1a]'
+              }`}
             >
-              Dashboard
+              {link.label}
             </Link>
-            <Link
-              to="/prediction"
-              className="flex-1 py-2 text-center text-sm font-medium text-brand-charcoal bg-brand-surface rounded-xl font-display"
-            >
-              AI Prediction
-            </Link>
-            <Link
-              to="/host"
-              className="flex-1 py-2 text-center text-sm font-medium text-brand-charcoal bg-brand-surface rounded-xl font-display"
-            >
-              Management
-            </Link>
-          </div>
+          ))}
         </div>
       </div>
 
-      {/* User Dropdown */}
-      {mobileMenuOpen && (
-        <div className="absolute top-full right-4 mt-2 w-56 bg-white border border-brand-border rounded-2xl shadow-modal animate-fade-in-scale overflow-hidden">
+      {/* Dropdown */}
+      {menuOpen && (
+        <div className="absolute top-full right-4 mt-2 w-56 bg-white border border-[#e0e0e0] rounded-2xl shadow-modal animate-fade-in-scale overflow-hidden">
           <nav className="py-2">
-            <Link
-              to="/explore"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center px-4 py-3 text-sm text-brand-charcoal hover:bg-brand-surface transition-colors font-medium"
-            >
-              Explore Properties
-            </Link>
-            <Link
-              to="/host"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center px-4 py-3 text-sm text-brand-charcoal hover:bg-brand-surface transition-colors font-medium"
-            >
-              Host Dashboard
-            </Link>
-            <Link
-              to="/prediction"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center px-4 py-3 text-sm text-brand-charcoal hover:bg-brand-surface transition-colors font-medium"
-            >
-              AI Price Prediction
-            </Link>
-            <div className="h-px bg-brand-border mx-4 my-1" />
-            <button className="flex items-center w-full px-4 py-3 text-sm text-brand-charcoal hover:bg-brand-surface transition-colors font-medium">
+            {navLinks.map(link => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="flex items-center px-4 py-3 text-sm text-[#1a1a1a] hover:bg-[#f7f7f7] transition-colors font-medium"
+              >
+                {link.label}
+              </Link>
+            ))}
+            <div className="h-px bg-[#e0e0e0] mx-4 my-1" />
+            <Link to="/auth" className="flex items-center px-4 py-3 text-sm text-[#1a1a1a] hover:bg-[#f7f7f7] transition-colors font-semibold">
               Sign up
-            </button>
-            <button className="flex items-center w-full px-4 py-3 text-sm text-brand-gray hover:bg-brand-surface transition-colors">
+            </Link>
+            <Link to="/auth" className="flex items-center px-4 py-3 text-sm text-[#717171] hover:bg-[#f7f7f7] transition-colors">
               Log in
-            </button>
+            </Link>
           </nav>
         </div>
       )}

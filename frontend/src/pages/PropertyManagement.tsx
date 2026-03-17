@@ -263,7 +263,7 @@ const PropertyManagement = () => {
           <div className="text-center mb-16">
             <h2 className="font-display font-700 text-4xl text-slate-900 mb-4">
               Powerful Features for
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600 bg-gradient-to-r"> Modern Real Estate</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#e6002e] bg-gradient-to-r"> Modern Real Estate</span>
             </h2>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
               Everything you need to manage properties efficiently and make data-driven decisions.
@@ -271,8 +271,8 @@ const PropertyManagement = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="feature-card group p-8 bg-white rounded-3xl shadow-xl border border-slate-100 hover:shadow-2xl hover:border-primary/20 transition-all duration-300">
-              <div className="w-14 h-14 bg-gradient-to-br from-primary to-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+            <div className="feature-card group p-8 bg-white rounded-2xl shadow-xl border border-slate-100 hover:shadow-2xl hover:border-primary/20 transition-all duration-300">
+              <div className="w-14 h-14 bg-gradient-to-br from-primary to-[#e6002e] rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <TrendingUp className="w-7 h-7 text-white" />
               </div>
               <h3 className="font-display font-600 text-xl text-slate-900 mb-3">Smart Pricing</h3>
@@ -281,7 +281,7 @@ const PropertyManagement = () => {
               </p>
             </div>
 
-            <div className="feature-card group p-8 bg-white rounded-3xl shadow-xl border border-slate-100 hover:shadow-2xl hover:border-primary/20 transition-all duration-300" style={{animationDelay: '0.1s'}}>
+            <div className="feature-card group p-8 bg-white rounded-2xl shadow-xl border border-slate-100 hover:shadow-2xl hover:border-primary/20 transition-all duration-300" style={{animationDelay: '0.1s'}}>
               <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <BarChart3 className="w-7 h-7 text-white" />
               </div>
@@ -291,7 +291,7 @@ const PropertyManagement = () => {
               </p>
             </div>
 
-            <div className="feature-card group p-8 bg-white rounded-3xl shadow-xl border border-slate-100 hover:shadow-2xl hover:border-primary/20 transition-all duration-300" style={{animationDelay: '0.2s'}}>
+            <div className="feature-card group p-8 bg-white rounded-2xl shadow-xl border border-slate-100 hover:shadow-2xl hover:border-primary/20 transition-all duration-300" style={{animationDelay: '0.2s'}}>
               <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Shield className="w-7 h-7 text-white" />
               </div>
@@ -310,7 +310,7 @@ const PropertyManagement = () => {
           <div className="text-center mb-16">
             <h2 className="font-display font-700 text-4xl text-slate-900 mb-4">
               Try AI Price Prediction
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600 bg-gradient-to-r"> Instantly</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#e6002e] bg-gradient-to-r"> Instantly</span>
             </h2>
             <p className="text-xl text-slate-600 max-w-2xl mx-auto mb-12">
               Experience the power of AI with our quick prediction tool. Just enter your property details.
@@ -319,9 +319,9 @@ const PropertyManagement = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
             {/* Form */}
-            <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 p-8">
+            <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 p-8">
               <h2 className="font-display font-700 text-2xl text-slate-900 mb-8 flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary to-blue-600 rounded-xl flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-br from-primary to-[#e6002e] rounded-xl flex items-center justify-center">
                   <Home className="w-4 h-4 text-white" />
                 </div>
                 Property Details
@@ -443,7 +443,7 @@ const PropertyManagement = () => {
                   id="predict-button"
                   type="submit"
                   disabled={isLoading}
-                  className="w-full py-4 rounded-2xl text-base font-display font-600 text-white bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-primary transition-all duration-300 shadow-xl hover:shadow-2xl disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="w-full py-4 rounded-2xl text-base font-display font-600 text-white bg-gradient-to-r from-primary to-[#e6002e] hover:from-blue-600 hover:to-primary transition-all duration-300 shadow-xl hover:shadow-2xl disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
                 >
                   {isLoading ? (
                     <>
@@ -466,13 +466,13 @@ const PropertyManagement = () => {
               {prediction && (
                 <div className="animate-fade-in">
                   {/* Main Result */}
-                  <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 p-8 text-center">
+                  <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 p-8 text-center">
                     <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-full text-primary text-sm font-display font-600 mb-4">
                       <Star className="w-4 h-4 mr-1" />
                       AI Predicted Price
                     </div>
                     <div className="mb-2">
-                      <span className="font-display font-800 text-5xl text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600 bg-gradient-to-r">
+                      <span className="font-display font-800 text-5xl text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#e6002e] bg-gradient-to-r">
                         {formatPrice(prediction.predictedPrice)}
                       </span>
                       <span className="text-slate-600 text-lg ml-2">per night</span>
@@ -485,7 +485,7 @@ const PropertyManagement = () => {
                   </div>
 
                   {/* Confidence */}
-                  <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 p-6">
+                  <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 p-6">
                     <div className="flex justify-between items-center mb-4">
                       <h4 className="font-display font-600 text-slate-900">Confidence Score</h4>
                       <span className={`font-display font-700 text-2xl ${
@@ -530,7 +530,7 @@ const PropertyManagement = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-br from-primary to-blue-600 relative overflow-hidden">
+      <section className="py-24 bg-gradient-to-br from-primary to-[#e6002e] relative overflow-hidden">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="font-display font-700 text-4xl text-white mb-6">

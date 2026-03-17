@@ -81,9 +81,9 @@ const HostDashboard = () => {
             <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center">
               <Home className="w-5 h-5 text-primary" />
             </div>
-            <h1 className="font-display font-700 text-2xl sm:text-3xl text-brand-charcoal">Host Dashboard</h1>
+            <h1 className="font-display font-700 text-2xl sm:text-3xl text-[#1a1a1a]">Host Dashboard</h1>
           </div>
-          <p className="text-muted-foreground text-sm ml-[52px]">
+          <p className="text-[#717171] text-sm ml-[52px]">
             Manage your listings and get AI-powered price predictions.
           </p>
         </div>
@@ -95,14 +95,14 @@ const HostDashboard = () => {
             { label: 'Available', value: properties.filter(p => p.status === 'Available').length || 2, icon: TrendingUp, color: 'text-green-600 bg-green-50' },
             { label: 'Avg. Price / Night', value: `$${properties.length ? Math.round(properties.reduce((a, b) => a + b.price, 0) / properties.length) : 320}`, icon: ChevronRight, color: 'text-blue-600 bg-blue-50' },
           ].map((stat) => (
-            <div key={stat.label} className="border border-brand-border rounded-2xl p-5 bg-white shadow-card">
+            <div key={stat.label} className="border border-[#e0e0e0] rounded-2xl p-5 bg-white shadow-card">
               <div className="flex items-center gap-3 mb-3">
                 <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${stat.color}`}>
                   <stat.icon className="w-4 h-4" />
                 </div>
-                <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{stat.label}</span>
+                <span className="text-xs text-[#717171] font-medium uppercase tracking-wide">{stat.label}</span>
               </div>
-              <p className="font-display font-700 text-2xl text-brand-charcoal">{stat.value}</p>
+              <p className="font-display font-700 text-2xl text-[#1a1a1a]">{stat.value}</p>
             </div>
           ))}
         </div>
@@ -110,12 +110,12 @@ const HostDashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           {/* Properties List */}
           <div className="lg:col-span-2">
-            <h2 className="font-display font-700 text-lg text-brand-charcoal mb-5">Your Properties</h2>
+            <h2 className="font-display font-700 text-lg text-[#1a1a1a] mb-5">Your Properties</h2>
             <div className="space-y-4">
               {properties.length === 0 ? (
                 // Skeleton loading
                 Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="border border-brand-border rounded-2xl p-4 space-y-3">
+                  <div key={i} className="border border-[#e0e0e0] rounded-2xl p-4 space-y-3">
                     <div className="skeleton h-4 w-2/3 rounded" />
                     <div className="skeleton h-3 w-1/2 rounded" />
                     <div className="skeleton h-9 w-full rounded-xl" />
@@ -128,13 +128,13 @@ const HostDashboard = () => {
                     className={`border rounded-2xl p-4 transition-all duration-150 ${
                       selectedPropertyId === property.id
                         ? 'border-primary bg-primary/5 shadow-btn/20'
-                        : 'border-brand-border bg-white hover:border-brand-charcoal shadow-card'
+                        : 'border-[#e0e0e0] bg-white hover:border-[#1a1a1a] shadow-card'
                     }`}
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div>
-                        <h3 className="font-display font-600 text-sm text-brand-charcoal">{property.title}</h3>
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
+                        <h3 className="font-display font-600 text-sm text-[#1a1a1a]">{property.title}</h3>
+                        <div className="flex items-center gap-1 text-xs text-[#717171] mt-0.5">
                           <MapPin className="w-3 h-3" />
                           {property.location}
                         </div>
@@ -143,13 +143,13 @@ const HostDashboard = () => {
                         {property.status}
                       </span>
                     </div>
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
+                    <div className="flex items-center gap-3 text-xs text-[#717171] mb-3">
                       <span className="flex items-center gap-1"><Bed className="w-3 h-3" />{property.bedrooms} beds</span>
                       <span className="flex items-center gap-1"><Bath className="w-3 h-3" />{property.bathrooms} baths</span>
                       <span className="flex items-center gap-1"><Maximize className="w-3 h-3" />{property.area} sqft</span>
                     </div>
                     <div className="flex items-center justify-between mb-3">
-                      <span className="font-display font-700 text-base text-brand-charcoal">${property.price}<span className="text-xs font-body font-400 text-muted-foreground">/night</span></span>
+                      <span className="font-display font-700 text-base text-[#1a1a1a]">${property.price}<span className="text-xs font-body font-400 text-[#717171]">/night</span></span>
                     </div>
                     <button
                       onClick={() => handlePredictPrice(property)}
@@ -170,13 +170,13 @@ const HostDashboard = () => {
 
           {/* Analytics Section */}
           <div className="lg:col-span-3">
-            <h2 className="font-display font-700 text-lg text-brand-charcoal mb-5">Price Analytics</h2>
+            <h2 className="font-display font-700 text-lg text-[#1a1a1a] mb-5">Price Analytics</h2>
 
             {!predictionData ? (
-              <div className="border border-dashed border-brand-border rounded-2xl flex flex-col items-center justify-center py-20 text-center">
-                <TrendingUp className="w-12 h-12 text-muted-foreground/40 mb-4" />
-                <p className="font-display font-600 text-brand-charcoal mb-1">No prediction yet</p>
-                <p className="text-sm text-muted-foreground">Select a property and click "Get AI Price Prediction"</p>
+              <div className="border border-dashed border-[#e0e0e0] rounded-2xl flex flex-col items-center justify-center py-20 text-center">
+                <TrendingUp className="w-12 h-12 text-[#717171]/40 mb-4" />
+                <p className="font-display font-600 text-[#1a1a1a] mb-1">No prediction yet</p>
+                <p className="text-sm text-[#717171]">Select a property and click "Get AI Price Prediction"</p>
               </div>
             ) : (
               <div className="space-y-4 animate-fade-in">
@@ -192,18 +192,18 @@ const HostDashboard = () => {
                       positive: predictionData.predictedPrice > predictionData.averageMarketPrice,
                     },
                   ].map((kpi) => (
-                    <div key={kpi.label} className="border border-brand-border rounded-2xl p-4 text-center bg-white shadow-card">
-                      <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2 font-medium">{kpi.label}</p>
-                      <p className={`font-display font-700 text-xl ${kpi.positive ? 'text-green-600' : 'text-brand-charcoal'}`}>{kpi.value}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{kpi.sub}</p>
+                    <div key={kpi.label} className="border border-[#e0e0e0] rounded-2xl p-4 text-center bg-white shadow-card">
+                      <p className="text-xs text-[#717171] uppercase tracking-wide mb-2 font-medium">{kpi.label}</p>
+                      <p className={`font-display font-700 text-xl ${kpi.positive ? 'text-green-600' : 'text-[#1a1a1a]'}`}>{kpi.value}</p>
+                      <p className="text-xs text-[#717171] mt-0.5">{kpi.sub}</p>
                     </div>
                   ))}
                 </div>
 
                 {/* Confidence */}
-                <div className="border border-brand-border rounded-2xl p-5 bg-white shadow-card">
+                <div className="border border-[#e0e0e0] rounded-2xl p-5 bg-white shadow-card">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-display font-600 text-sm text-brand-charcoal">Prediction Confidence</h3>
+                    <h3 className="font-display font-600 text-sm text-[#1a1a1a]">Prediction Confidence</h3>
                     <span className={`font-display font-700 text-lg ${
                       predictionData.confidence > 0.8 ? 'text-green-600' :
                       predictionData.confidence > 0.6 ? 'text-yellow-600' : 'text-red-500'
@@ -211,7 +211,7 @@ const HostDashboard = () => {
                       {(predictionData.confidence * 100).toFixed(1)}%
                     </span>
                   </div>
-                  <div className="w-full bg-brand-surface rounded-full h-2.5">
+                  <div className="w-full bg-[#f7f7f7] rounded-full h-2.5">
                     <div
                       className={`h-2.5 rounded-full transition-all duration-500 ${
                         predictionData.confidence > 0.8 ? 'bg-green-500' :
@@ -224,14 +224,14 @@ const HostDashboard = () => {
 
                 {/* Charts */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="border border-brand-border rounded-2xl p-4 bg-white shadow-card">
+                  <div className="border border-[#e0e0e0] rounded-2xl p-4 bg-white shadow-card">
                     <PriceChart prediction={predictionData} />
                   </div>
-                  <div className="border border-brand-border rounded-2xl p-4 bg-white shadow-card">
+                  <div className="border border-[#e0e0e0] rounded-2xl p-4 bg-white shadow-card">
                     <ConfidenceChart prediction={predictionData} />
                   </div>
                 </div>
-                <div className="border border-brand-border rounded-2xl p-4 bg-white shadow-card">
+                <div className="border border-[#e0e0e0] rounded-2xl p-4 bg-white shadow-card">
                   <PricePerSqFtChart
                     prediction={predictionData}
                     area={properties.find(p => p.id === selectedPropertyId)?.area ?? 1000}
