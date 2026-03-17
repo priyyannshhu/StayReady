@@ -7,7 +7,7 @@
 
 [[redirects]]
   from = "/api/*"
-to = "https://stayready-final-backend.onrender.com/api/:splat"
+to = "https://stayready-final-backend.onrender.com:10000/api/:splat"
   status = 200
 
 [[redirects]]
