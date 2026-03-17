@@ -744,6 +744,22 @@ app.post('/api/predict-price', async (req, res) => {
     const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:8000';
     
     try {
+      // First check if ML service is available
+      const healthCheck = await fetch(`${ML_SERVICE_URL}/`, {
+        method: 'GET',
+        timeout: 5000
+      });
+      
+      if (!healthCheck.ok) {
+        throw new Error('ML service unavailable');
+      }
+      
+      const healthData = await healthCheck.json();
+      if (!healthData.model_loaded) {
+        console.log('ML model not loaded, using fallback pricing');
+        throw new Error('ML model not loaded');
+      }
+      
       const response = await fetch(`${ML_SERVICE_URL}/predict`, {
         method: 'POST',
         headers: {
