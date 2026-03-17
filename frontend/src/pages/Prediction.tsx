@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../config/api';
 import { PriceChart, ConfidenceChart, PricePerSqFtChart } from '../components/AnalyticsCharts';
 import { gsap } from 'gsap';
 import {
   TrendingUp, MapPin, Home, Bed, Bath, Maximize,
-  Loader2, Sparkles, ChevronRight, Star, ArrowRight, Car
+  Loader2, Sparkles, ChevronRight, Star, ArrowRight, Car, AlertCircle
 } from 'lucide-react';
 
 interface ManualPredictionForm {
@@ -30,9 +31,8 @@ const Prediction = () => {
   const [prediction, setPrediction] = useState<PredictionResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-
   useEffect(() => {
     gsap.fromTo('.prediction-header', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' });
     gsap.fromTo('.prediction-form', { opacity: 0, scale: 0.97 }, { opacity: 1, scale: 1, duration: 0.8, delay: 0.15, ease: 'power2.out' });
@@ -41,10 +41,10 @@ const Prediction = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true); setPrediction(null); setShowAnalytics(false);
+    setIsLoading(true); setPrediction(null); setShowAnalytics(false); setError(null);
     gsap.to('#predict-button', { scale: 0.97, duration: 0.1, yoyo: true, repeat: 1 });
     try {
-      const res = await fetch(`${API_URL}/predict-price`, {
+      const res = await fetch(`${API_BASE_URL}/predict-price`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -56,10 +56,19 @@ const Prediction = () => {
           accommodates: form.bedrooms + 1,
         }),
       });
+      
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || errorData.message || 'Prediction failed');
+      }
+      
       const data = await res.json();
       setPrediction({ predictedPrice: data.predicted_price, confidence: data.confidence, ...data });
       setShowAnalytics(true);
-    } catch (e) { console.error('Prediction error:', e); }
+    } catch (e: any) { 
+      console.error('Prediction error:', e); 
+      setError(e.message || 'Failed to get prediction');
+    }
     finally { setIsLoading(false); }
   };
 
@@ -142,19 +151,19 @@ const Prediction = () => {
                 <div>
                   <label className="form-label flex items-center gap-1"><Bed className="w-3 h-3" />Beds</label>
                   <input type="number" min={1} max={20} value={form.bedrooms}
-                    onChange={e => setForm({ ...form, bedrooms: parseInt(e.target.value) })}
+                    onChange={e => setForm({ ...form, bedrooms: parseInt(e.target.value) || 1 })}
                     className={inputCls} />
                 </div>
                 <div>
                   <label className="form-label flex items-center gap-1"><Bath className="w-3 h-3" />Baths</label>
                   <input type="number" min={1} max={20} value={form.bathrooms}
-                    onChange={e => setForm({ ...form, bathrooms: parseInt(e.target.value) })}
+                    onChange={e => setForm({ ...form, bathrooms: parseInt(e.target.value) || 1 })}
                     className={inputCls} />
                 </div>
                 <div>
                   <label className="form-label flex items-center gap-1"><Maximize className="w-3 h-3" />Sqft</label>
                   <input type="number" min={100} value={form.area}
-                    onChange={e => setForm({ ...form, area: parseInt(e.target.value) })}
+                    onChange={e => setForm({ ...form, area: parseInt(e.target.value) || 100 })}
                     className={inputCls} />
                 </div>
               </div>
@@ -195,7 +204,7 @@ const Prediction = () => {
                 <div>
                   <label className="form-label">Property Age (yrs)</label>
                   <input type="number" min={0} max={100} value={form.propertyAge}
-                    onChange={e => setForm({ ...form, propertyAge: parseInt(e.target.value) })}
+                    onChange={e => setForm({ ...form, propertyAge: parseInt(e.target.value) || 0 })}
                     className={inputCls} />
                 </div>
               </div>
@@ -206,6 +215,13 @@ const Prediction = () => {
                   ? <><Loader2 className="w-5 h-5 animate-spin" />Predicting price…</>
                   : <><TrendingUp className="w-5 h-5" />Predict price<ArrowRight className="w-4 h-4" /></>}
               </button>
+              
+              {error && (
+                <div className="flex items-start gap-2 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+                  <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                  <span>{error}</span>
+                </div>
+              )}
             </form>
           </div>
 

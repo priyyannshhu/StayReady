@@ -1,101 +1,128 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
-from typing import List, Dict, Any
-
-# Try to import ML dependencies, but don't fail if they're not available
-try:
-    import joblib
-    import numpy as np
-    import sklearn
-    ML_AVAILABLE = True
-except ImportError:
-    ML_AVAILABLE = False
-    print("ML dependencies not available, using fallback predictions only")
+import joblib
+import numpy as np
+from typing import Optional
 
 app = FastAPI(title="Stay Ready Price Prediction API", version="1.0.0")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Pydantic models for request/response
 class PricePredictionRequest(BaseModel):
     city: str
+    property_type: str
     bedrooms: int
     bathrooms: int
-    accommodates: int
-    property_type: str
-    latitude: float
-    longitude: float
+    area: float
+    accommodates: Optional[int] = None
+    furnishing: Optional[str] = "furnished"
+    parking: Optional[bool] = False
+    property_age: Optional[int] = 5
+    country: Optional[str] = "India"
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
 class PricePredictionResponse(BaseModel):
     predicted_price: float
     confidence: float
     city: str
+    fallback: bool
 
 # Load model and preprocessing components
 model_loaded = False
-if ML_AVAILABLE:
-    try:
-        model = joblib.load('models/price_model.pkl')
-        encoders = joblib.load('models/encoders.pkl')
-        scaler = joblib.load('models/scaler.pkl')
-        model_loaded = True
-        print("Model loaded successfully!")
-    except FileNotFoundError:
-        model = None
-        encoders = None
-        scaler = None
-        print("Warning: Model not found. Using fallback predictions.")
-else:
+try:
+    model = joblib.load('models/price_model.pkl')
+    encoders = joblib.load('models/encoders.pkl')
+    scaler = joblib.load('models/scaler.pkl')
+    model_loaded = True
+    print("Model loaded successfully!")
+except FileNotFoundError:
     model = None
     encoders = None
     scaler = None
-    print("ML dependencies not available. Using fallback predictions only.")
+    print("Warning: Model not found. Using fallback predictions.")
 
-# Fallback prediction function
+# Indian-market rule-based fallback
 def fallback_prediction(request: PricePredictionRequest):
-    """Simple fallback prediction based on property features"""
-    base_price = 50  # Base price per night
+    """Indian-market rule-based fallback pricing"""
     
-    # Add value based on features
-    price = base_price
-    price += request.bedrooms * 30
-    price += request.bathrooms * 25
-    price += request.accommodates * 20
-    
-    # Property type adjustments
-    if request.property_type.lower() == 'house':
-        price *= 1.5
-    elif request.property_type.lower() == 'villa':
-        price *= 2.0
-    elif request.property_type.lower() == 'apartment':
-        price *= 1.2
-    
-    # City adjustments (example)
-    city_multipliers = {
-        'new york': 1.8,
-        'los angeles': 1.6,
-        'chicago': 1.3,
-        'miami': 1.4,
-        'boston': 1.5
+    # City base prices in INR per night
+    city_prices = {
+        'mumbai': 8000,
+        'delhi': 6500,
+        'new delhi': 6500,
+        'bangalore': 5500,
+        'bengaluru': 5500,
+        'hyderabad': 4500,
+        'chennai': 4000,
+        'kolkata': 3500,
+        'pune': 4000,
+        'goa': 6000,
+        'jaipur': 3500,
+        'ahmedabad': 3000
     }
     
-    city_lower = request.city.lower()
-    for city, multiplier in city_multipliers.items():
-        if city_lower in city_lower:
-            price *= multiplier
+    # Property type multipliers
+    property_multipliers = {
+        'apartment': 1.0,
+        'studio': 0.75,
+        'condo': 0.95,
+        'house': 1.5,
+        'townhouse': 1.3,
+        'villa': 2.0,
+        'cabin': 0.85,
+        'penthouse': 2.5,
+        'bungalow': 1.4
+    }
+    
+    # Furnishing multipliers
+    furnishing_multipliers = {
+        'furnished': 1.0,
+        'semi-furnished': 0.88,
+        'unfurnished': 0.75
+    }
+    
+    # Find city base price
+    city_key = request.city.lower()
+    base_price = 3000  # default
+    
+    for city, price in city_prices.items():
+        if city in city_key or city_key in city:
+            base_price = price
             break
     
-    # Add some randomness for confidence calculation
-    confidence = 0.75  # Moderate confidence for fallback
+    # Get multipliers
+    prop_mult = property_multipliers.get(request.property_type.lower(), 1.0)
+    furn_mult = furnishing_multipliers.get(request.furnishing.lower(), 1.0)
     
-    return round(price, 2), confidence
+    # Calculate price
+    price = (base_price + 
+             request.bedrooms * 800 + 
+             request.bathrooms * 500 + 
+             (request.area / 100) * 150 + 
+             (300 if request.parking else 0))
+    
+    # Apply multipliers
+    price *= prop_mult * furn_mult * max(0.75, 1.0 - request.property_age * 0.01)
+    
+    return round(price, 2), 0.72
 
 @app.get("/")
 async def root():
     return {
         "message": "Stay Ready Price Prediction API",
         "version": "1.0.0",
-        "model_loaded": model_loaded,
-        "features": ["Real Dataset Training", "Advanced ML Pipeline", "Production Ready"]
+        "model_loaded": model_loaded
     }
 
 @app.get("/health")
@@ -106,9 +133,24 @@ async def health_check():
         "dataset": "Real Airbnb Data"
     }
 
+@app.get("/model-info")
+async def get_model_info():
+    """Get information about trained model"""
+    if not model_loaded:
+        raise HTTPException(
+            status_code=503, 
+            detail="Model not loaded. Please train the model first."
+        )
+    
+    return {
+        "model_type": "RandomForestRegressor",
+        "dataset": "Real Airbnb Data",
+        "status": "loaded"
+    }
+
 @app.post("/predict", response_model=PricePredictionResponse)
 async def predict_price(request: PricePredictionRequest):
-    """Predict Airbnb property price using real dataset trained model"""
+    """Predict Airbnb property price using ML model or fallback"""
     
     if not model_loaded:
         # Use fallback prediction
@@ -116,18 +158,19 @@ async def predict_price(request: PricePredictionRequest):
         return PricePredictionResponse(
             predicted_price=predicted_price,
             confidence=confidence,
-            city=request.city
+            city=request.city,
+            fallback=True
         )
     
     try:
         # Prepare features for prediction
         features = {
             'city': request.city,
-            'latitude': request.latitude,
-            'longitude': request.longitude,
+            'latitude': request.latitude or 19.0760,  # Default Mumbai
+            'longitude': request.longitude or 72.8777,
             'bedrooms': request.bedrooms,
             'bathrooms': request.bathrooms,
-            'accommodates': request.accommodates,
+            'accommodates': request.accommodates or (request.bedrooms + 1),
             'property_type': request.property_type,
             'room_type': 'Entire home/apt',  # Default for prediction
             'minimum_nights': 3,  # Default
@@ -173,7 +216,8 @@ async def predict_price(request: PricePredictionRequest):
         return PricePredictionResponse(
             predicted_price=round(float(prediction), 2),
             confidence=round(float(confidence), 3),
-            city=request.city
+            city=request.city,
+            fallback=False
         )
         
     except ValueError as e:
@@ -186,87 +230,7 @@ async def predict_price(request: PricePredictionRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prediction error: {str(e)}")
 
-@app.get("/model-info")
-async def get_model_info():
-    """Get information about trained model"""
-    if not model_loaded:
-        raise HTTPException(
-            status_code=503, 
-            detail="Model not loaded. Please train the model first."
-        )
-    
-    feature_importance = {}
-    feature_names = ['city_encoded', 'latitude', 'longitude', 'bedrooms', 'bathrooms', 
-                   'accommodates', 'property_type_encoded', 'room_type_encoded', 
-                   'minimum_nights', 'number_of_reviews', 'availability_365']
-    
-    for name, importance in zip(feature_names, model.feature_importances_):
-        feature_importance[name] = float(importance)
-    
-    return {
-        "model_type": "RandomForestRegressor",
-        "dataset": "Real Airbnb Data",
-        "n_estimators": model.n_estimators,
-        "max_depth": model.max_depth,
-        "feature_importance": feature_importance,
-        "training_features": feature_names,
-        "performance": {
-            "MAE": "Calculated during training",
-            "R2_Score": "Calculated during training"
-        }
-    }
-
-@app.get("/dataset-info")
-async def get_dataset_info():
-    """Get information about the training dataset"""
-    if not model_loaded:
-        raise HTTPException(
-            status_code=503, 
-            detail="Model not loaded. Please train the model first."
-        )
-    
-    return {
-        "dataset_source": "Real Airbnb Sample Data",
-        "features": [
-            "city", "latitude", "longitude", "bedrooms", "bathrooms", 
-            "accommodates", "property_type", "room_type", "minimum_nights",
-            "number_of_reviews", "availability_365", "price"
-        ],
-        "preprocessing": [
-            "Missing value imputation",
-            "Categorical encoding",
-            "Feature scaling",
-            "Outlier removal"
-        ],
-        "model_algorithm": "RandomForestRegressor",
-        "training_samples": "Varies based on dataset size"
-    }
-
-@app.post("/train")
-async def train_new_model():
-    """Train a new model with real dataset"""
-    try:
-        from train_model import train_model
-        
-        # Train new model
-        model, new_encoders, new_scaler = train_model()
-        
-        # Reload the new model
-        global model_loaded, encoders, scaler
-        model = joblib.load('models/price_model.pkl')
-        encoders = joblib.load('models/encoders.pkl')
-        scaler = joblib.load('models/scaler.pkl')
-        model_loaded = True
-        
-        return {
-            "message": "Model trained successfully with real Airbnb dataset",
-            "model_loaded": True,
-            "dataset": "Real Airbnb Data",
-            "features": ["Real Dataset Training", "Advanced ML Pipeline", "Production Ready"]
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Training error: {str(e)}")
-
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
