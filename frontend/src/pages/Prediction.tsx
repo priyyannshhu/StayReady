@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { PriceChart, ConfidenceChart, PricePerSqFtChart } from '../components/AnalyticsCharts';
-import Footer from '../components/Footer';
 import { gsap } from 'gsap';
 import {
   TrendingUp, MapPin, Home, Bed, Bath, Maximize,
@@ -286,7 +285,6 @@ const Prediction = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

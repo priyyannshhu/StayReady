@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { PriceChart, ConfidenceChart, PricePerSqFtChart } from '../components/AnalyticsCharts';
-import Footer from '../components/Footer';
 import { TrendingUp, Home, MapPin, Bed, Bath, Maximize, ChevronRight, Loader2 } from 'lucide-react';
 
 interface Property {
@@ -243,7 +242,6 @@ const HostDashboard = () => {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 };

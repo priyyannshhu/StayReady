@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { HelpCircle, MessageCircle, Phone, Mail, Shield } from 'lucide-react';
-import Footer from '../components/Footer';
 
 const Support = () => {
   return (
@@ -93,7 +92,6 @@ const Support = () => {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 };

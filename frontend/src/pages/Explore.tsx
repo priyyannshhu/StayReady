@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import PropertyCard from '../components/PropertyCard';
 import BookingModal from '../components/BookingModal';
 import { PropertySkeleton, EmptyState } from '../components/LoadingStates';
-import Footer from '../components/Footer';
 import heroImg from '../assets/hero-bg.jpg';
 import { Search, MapPin, Calendar, Users, SlidersHorizontal, ChevronDown } from 'lucide-react';
 
@@ -226,8 +225,6 @@ const Explore = () => {
       {selectedProperty && (
         <BookingModal property={selectedProperty} isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setSelectedProperty(null); }} />
       )}
-
-      <Footer />
     </div>
   );
 };

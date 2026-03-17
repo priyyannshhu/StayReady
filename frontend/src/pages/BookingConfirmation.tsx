@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import Footer from '../components/Footer';
 import { CheckCircle, Calendar, Users, Home, ArrowRight, Download } from 'lucide-react';
 
 const BookingConfirmation = () => {
@@ -109,7 +108,6 @@ const BookingConfirmation = () => {
           <Download className="w-4 h-4" />Download receipt
         </button>
       </main>
-      <Footer />
     </div>
   );
 };

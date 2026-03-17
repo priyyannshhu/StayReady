@@ -177,7 +177,7 @@ const PropertyManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-orange-50 dark:from-rose-950 dark:via-pink-950 dark:to-orange-950">
+    <div className="min-h-screen bg-surface">
       {/* Animated Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-brand-coral/5 rounded-full blur-3xl floating-element"></div>

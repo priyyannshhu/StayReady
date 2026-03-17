@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { BookOpen, Video, FileText, Users, HelpCircle, Download } from 'lucide-react';
-import Footer from '../../components/Footer';
 
 const HostResources = () => {
   const resources = [
@@ -200,7 +199,6 @@ const HostResources = () => {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 };

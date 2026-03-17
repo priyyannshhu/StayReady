@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { Users, MessageCircle, Award, Calendar, MapPin, Heart } from 'lucide-react';
-import Footer from '../../components/Footer';
 
 const Community = () => {
   const communityFeatures = [
@@ -120,7 +119,6 @@ const Community = () => {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 };

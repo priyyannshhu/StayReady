@@ -1,7 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import BookingModal from '../components/BookingModal';
-import Footer from '../components/Footer';
 import {
   ArrowLeft, Star, Bed, Bath, Maximize, Wifi, Utensils, Car, Waves,
   Flame, Thermometer, Dumbbell, ChevronRight, Heart, Share2, Shield, MapPin, Loader2
@@ -264,7 +263,6 @@ const PropertyDetail = () => {
       </div>
 
       <BookingModal property={property} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-      <Footer />
     </div>
   );
 };
