@@ -727,6 +727,120 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// POST /api/predict-price - ML Price Prediction
+app.post('/api/predict-price', async (req, res) => {
+  try {
+    const { 
+      country, city, property_type, bedrooms, bathrooms, 
+      area, furnishing, parking, property_age, accommodates 
+    } = req.body;
+    
+    console.log('Prediction request:', {
+      country, city, property_type, bedrooms, bathrooms,
+      area, furnishing, parking, property_age, accommodates
+    });
+    
+    // Call external ML service
+    const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:8000';
+    
+    try {
+      const response = await fetch(`${ML_SERVICE_URL}/predict`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': 'StayReady-Frontend/1.0'
+        },
+        body: JSON.stringify({
+          country,
+          city,
+          property_type,
+          bedrooms,
+          bathrooms,
+          area,
+          furnishing,
+          parking,
+          property_age,
+          accommodates
+        }),
+        timeout: 30000 // 30 second timeout
+      });
+      
+      if (!response.ok) {
+        throw new Error(`ML service responded with status: ${response.status}`);
+      }
+      
+      const mlResult = await response.json();
+      
+      // Add our own confidence calculation based on data completeness
+      const dataCompleteness = calculateDataCompleteness(req.body);
+      const adjustedConfidence = Math.min(mlResult.confidence || 0.75, dataCompleteness);
+      
+      const result = {
+        predicted_price: mlResult.predicted_price || Math.floor(Math.random() * 5000) + 1000, // Fallback random price
+        confidence: adjustedConfidence,
+        features: mlResult.features || {},
+        fallback: !mlResult.predicted_price,
+        city: city
+      };
+      
+      console.log('Prediction result:', result);
+      
+      res.json(result);
+      
+    } catch (error) {
+      console.error('ML service error:', error);
+      
+      // Fallback calculation if ML service fails
+      const fallbackPrice = calculateFallbackPrice(req.body);
+      
+      const result = {
+        predicted_price: fallbackPrice,
+        confidence: 0.65, // Lower confidence for fallback
+        fallback: true,
+        features: {},
+        city: city
+      };
+      
+      res.json(result);
+    }
+  } catch (error) {
+    console.error('Prediction endpoint error:', error);
+    res.status(500).json({ 
+      error: 'Prediction service unavailable',
+      message: 'Unable to process prediction at this time'
+    });
+  }
+});
+
+// Helper function to calculate data completeness
+function calculateDataCompleteness(data) {
+  const fields = ['country', 'city', 'property_type', 'bedrooms', 'bathrooms', 'area'];
+  const filledFields = fields.filter(field => data[field] && data[field] !== '');
+  return (filledFields.length / fields.length) * 0.9 + 0.1; // 90% base + 10% bonus
+}
+
+// Helper function for fallback price calculation
+function calculateFallbackPrice(data) {
+  const basePrice = 2000; // Base price for Indian market
+  const locationMultiplier = data.city && data.city.toLowerCase().includes('mumbai') ? 1.5 : 
+                          data.city && data.city.toLowerCase().includes('delhi') ? 1.3 :
+                          data.city && data.city.toLowerCase().includes('bangalore') ? 1.4 : 1.0;
+  
+  const propertyTypeMultiplier = {
+    'apartment': 1.0,
+    'villa': 2.0,
+    'house': 1.8,
+    'condo': 0.9,
+    'studio': 0.7,
+    'cabin': 0.8,
+    'townhouse': 1.2
+  }[data.property_type?.toLowerCase()] || 1.0;
+  
+  const areaPrice = data.area ? (data.area / 100) * 50 : 500; // ₹50 per sq ft
+  
+  return Math.floor(basePrice * locationMultiplier * propertyTypeMultiplier + areaPrice);
+}
+
 // Initialize demo data
 const initializeDemoData = async () => {
   try {
