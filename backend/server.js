@@ -487,7 +487,7 @@ app.post('/api/predict-price', async (req, res) => {
     
     // Call ML service
     const axios = require('axios');
-    const response = await axios.post('http://localhost:8000/predict', {
+    const response = await axios.post(`${process.env.ML_SERVICE_URL || 'http://localhost:8000'}/predict`, {
       city,
       bedrooms,
       bathrooms,
@@ -721,7 +721,7 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
     services: {
       mongodb: 'Connected',
-      ml_service: 'http://localhost:8000',
+      ml_service: process.env.ML_SERVICE_URL || 'http://localhost:8000',
       demo_data: 'Loaded'
     }
   });
