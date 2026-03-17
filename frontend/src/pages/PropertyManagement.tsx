@@ -32,6 +32,8 @@ const PropertyManagement = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
 
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
   useEffect(() => {
     gsap.fromTo('.hero-title', { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 1, ease: 'power3.out' });
     gsap.fromTo('.hero-subtitle', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 1, delay: 0.2, ease: 'power3.out' });
@@ -49,7 +51,7 @@ const PropertyManagement = () => {
     setIsLoading(true); setPrediction(null); setShowAnalytics(false);
     gsap.to('#predict-button', { scale: 0.97, duration: 0.1, yoyo: true, repeat: 1 });
     try {
-      const res = await fetch('/api/predict-price', {
+      const res = await fetch(`${API_URL}/predict-price`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
