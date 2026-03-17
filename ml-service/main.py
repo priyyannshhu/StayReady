@@ -1,9 +1,17 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import joblib
-import numpy as np
 import os
 from typing import List, Dict, Any
+
+# Try to import ML dependencies, but don't fail if they're not available
+try:
+    import joblib
+    import numpy as np
+    import sklearn
+    ML_AVAILABLE = True
+except ImportError:
+    ML_AVAILABLE = False
+    print("ML dependencies not available, using fallback predictions only")
 
 app = FastAPI(title="Stay Ready Price Prediction API", version="1.0.0")
 
@@ -23,18 +31,24 @@ class PricePredictionResponse(BaseModel):
     city: str
 
 # Load model and preprocessing components
-try:
-    model = joblib.load('models/price_model.pkl')
-    encoders = joblib.load('models/encoders.pkl')
-    scaler = joblib.load('models/scaler.pkl')
-    model_loaded = True
-    print("Model loaded successfully!")
-except FileNotFoundError:
+model_loaded = False
+if ML_AVAILABLE:
+    try:
+        model = joblib.load('models/price_model.pkl')
+        encoders = joblib.load('models/encoders.pkl')
+        scaler = joblib.load('models/scaler.pkl')
+        model_loaded = True
+        print("Model loaded successfully!")
+    except FileNotFoundError:
+        model = None
+        encoders = None
+        scaler = None
+        print("Warning: Model not found. Using fallback predictions.")
+else:
     model = None
     encoders = None
     scaler = None
-    model_loaded = False
-    print("Warning: Model not found. Using fallback predictions.")
+    print("ML dependencies not available. Using fallback predictions only.")
 
 # Fallback prediction function
 def fallback_prediction(request: PricePredictionRequest):
