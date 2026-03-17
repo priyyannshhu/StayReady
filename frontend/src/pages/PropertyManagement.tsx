@@ -222,7 +222,7 @@ const PropertyManagement = () => {
             </Link>
             <Link
               to="/host"
-              className="px-8 py-4 rounded-2xl text-lg font-display font-600 text-brand-slate bg-gradient-to-r from-rose-50 to-pink-50 dark:from-rose-900 dark:to-pink-900 border-2 border-brand-pink/30 hover:border-brand-coral hover:text-brand-coral transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 flex items-center justify-center"
+              className="px-8 py-4 rounded-2xl text-lg font-display font-600 text-brand-slate bg-gradient-to-r from-rose-50 to-pink-50 border-2 border-brand-pink/30 hover:border-brand-coral hover:text-brand-coral transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 flex items-center justify-center"
             >
               <Building className="w-5 h-5 mr-2" />
               Property Dashboard
@@ -231,26 +231,26 @@ const PropertyManagement = () => {
 
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-16">
-            <div className="text-center p-6 bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900 dark:to-pink-900 rounded-2xl border border-brand-pink/20 shadow-lg">
+            <div className="text-center p-6 bg-gradient-to-br from-rose-50 to-pink-50 rounded-2xl border border-brand-pink/20 shadow-lg">
               <div className="w-12 h-12 bg-gradient-to-br from-brand-coral to-brand-pink rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <DollarSign className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-display font-700 text-3xl text-brand-slate dark:text-white mb-2">95%</h3>
-              <p className="text-slate-600 dark:text-slate-400 font-medium">Accuracy Rate</p>
+              <h3 className="font-display font-700 text-3xl text-brand-slate mb-2">95%</h3>
+              <p className="text-slate-600 font-medium">Accuracy Rate</p>
             </div>
-            <div className="text-center p-6 bg-gradient-to-br from-pink-50 to-orange-50 dark:from-pink-900 dark:to-orange-900 rounded-2xl border border-brand-fuchsia/20 shadow-lg">
+            <div className="text-center p-6 bg-gradient-to-br from-pink-50 to-orange-50 rounded-2xl border border-brand-fuchsia/20 shadow-lg">
               <div className="w-12 h-12 bg-gradient-to-br from-brand-pink to-brand-fuchsia rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Users className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-display font-700 text-3xl text-brand-slate dark:text-white mb-2">10K+</h3>
-              <p className="text-slate-600 dark:text-slate-400 font-medium">Properties Analyzed</p>
+              <h3 className="font-display font-700 text-3xl text-brand-slate mb-2">10K+</h3>
+              <p className="text-slate-600 font-medium">Properties Analyzed</p>
             </div>
-            <div className="text-center p-6 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900 dark:to-amber-900 rounded-2xl border border-brand-rose/20 shadow-lg">
+            <div className="text-center p-6 bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl border border-brand-rose/20 shadow-lg">
               <div className="w-12 h-12 bg-gradient-to-br from-brand-fuchsia to-brand-rose rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <Zap className="w-6 h-6 text-white" />
               </div>
-              <h3 className="font-display font-700 text-3xl text-brand-slate dark:text-white mb-2">2.5M</h3>
-              <p className="text-slate-600 dark:text-slate-400 font-medium">Data Points Processed</p>
+              <h3 className="font-display font-700 text-3xl text-brand-slate mb-2">2.5M</h3>
+              <p className="text-slate-600 font-medium">Data Points Processed</p>
             </div>
           </div>
         </div>
