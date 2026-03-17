@@ -7,12 +7,12 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "https://stayready-api.onrender.com/api/:splat"
+  to = "https://stayready-final-backend.onrender.com/api/:splat"
   status = 200
 
 [[redirects]]
   from = "/predict"
-  to = "https://stayready-ml-2-0.onrender.com/predict"
+  to = "https://stayready-final.onrender.com/predict"
   status = 200
 
 [context.production]
