@@ -2,479 +2,314 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { 
-  TrendingUp, 
-  MapPin, 
-  Home, 
-  Bed, 
-  Bath, 
-  Maximize, 
-  Loader2, 
-  Sparkles, 
-  ChevronRight,
-  Star,
-  CheckCircle,
-  ArrowUpRight,
-  ArrowRight,
-  Menu,
-  X,
-  Building,
-  DollarSign,
-  Users,
-  Zap,
-  BarChart3,
-  Shield
+  TrendingUp, MapPin, Home, Bed, Bath, Maximize, Loader2, Sparkles,
+  Star, ArrowRight, ArrowUpRight, Building, DollarSign, Users, Zap, BarChart3, Shield
 } from 'lucide-react';
 import { PriceChart, ConfidenceChart, PricePerSqFtChart } from '../components/AnalyticsCharts';
 
 interface ManualPredictionForm {
-  country: string;
-  city: string;
-  propertyType: string;
-  bedrooms: number;
-  bathrooms: number;
-  area: number;
-  furnishing: string;
-  parking: boolean;
-  propertyAge: number;
+  country: string; city: string; propertyType: string;
+  bedrooms: number; bathrooms: number; area: number;
+  furnishing: string; parking: boolean; propertyAge: number;
 }
-
 interface PredictionResult {
-  predictedPrice: number;
-  confidence: number;
-  features?: Record<string, unknown>;
-  fallback?: boolean;
-  city?: string;
+  predictedPrice: number; confidence: number;
+  features?: Record<string, unknown>; fallback?: boolean; city?: string;
 }
 
-const PROPERTY_TYPES = ['Apartment', 'Villa', 'House', 'Condo', 'Studio', 'Cabin', 'Townhouse'];
-const FURNISHING_OPTIONS = ['furnished', 'semi-furnished', 'unfurnished'];
+const PROPERTY_TYPES = ['Apartment','Villa','House','Condo','Studio','Cabin','Townhouse'];
+const FURNISHING_OPTIONS = ['furnished','semi-furnished','unfurnished'];
+
+const inputCls = "w-full px-4 py-3 border border-[#dddddd] rounded-xl text-sm text-[#1a1a1a] focus:outline-none focus:border-[#1a1a1a] focus:ring-1 focus:ring-[#1a1a1a] transition-all duration-150 bg-white placeholder-[#aaaaaa]";
 
 const PropertyManagement = () => {
   const [manualForm, setManualForm] = useState<ManualPredictionForm>({
-    country: 'India',
-    city: '',
-    propertyType: 'apartment',
-    bedrooms: 1,
-    bathrooms: 1,
-    area: 500,
-    furnishing: 'furnished',
-    parking: false,
-    propertyAge: 5,
+    country: 'India', city: '', propertyType: 'apartment',
+    bedrooms: 1, bathrooms: 1, area: 500,
+    furnishing: 'furnished', parking: false, propertyAge: 5,
   });
   const [prediction, setPrediction] = useState<PredictionResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    // Hero animations
-    gsap.fromTo('.hero-title', {
-      opacity: 0,
-      y: 50
-    }, {
-      opacity: 1,
-      y: 0,
-      duration: 1.2,
-      ease: 'power3.out'
-    });
-
-    gsap.fromTo('.hero-subtitle', {
-      opacity: 0,
-      y: 30
-    }, {
-      opacity: 1,
-      y: 0,
-      duration: 1.2,
-      delay: 0.2,
-      ease: 'power3.out'
-    });
-
-    gsap.fromTo('.hero-buttons', {
-      opacity: 0,
-      y: 40
-    }, {
-      opacity: 1,
-      y: 0,
-      duration: 1.2,
-      delay: 0.4,
-      ease: 'power3.out'
-    });
-
-    // Feature cards animation
-    gsap.utils.toArray('.feature-card').forEach((card, index) => {
-      gsap.fromTo(card as Element, {
-        opacity: 0,
-        y: 60,
-        scale: 0.9
-      }, {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.8,
-        delay: 0.8 + (index * 0.1),
-        ease: 'power2.out'
-      });
-    });
-
-    // Floating animation for hero elements
-    gsap.to('.floating-element', {
-      y: -20,
-      duration: 3,
-      repeat: -1,
-      yoyo: true,
-      ease: 'power1.inOut'
+    gsap.fromTo('.hero-title', { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 1, ease: 'power3.out' });
+    gsap.fromTo('.hero-subtitle', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 1, delay: 0.2, ease: 'power3.out' });
+    gsap.fromTo('.hero-buttons', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 1, delay: 0.35, ease: 'power3.out' });
+    gsap.utils.toArray('.feature-card').forEach((card, i) => {
+      gsap.fromTo(card as Element,
+        { opacity: 0, y: 40 },
+        { opacity: 1, y: 0, duration: 0.7, delay: 0.6 + i * 0.1, ease: 'power2.out' }
+      );
     });
   }, []);
 
   const handleManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setPrediction(null);
-    setShowAnalytics(false);
-    
-    // Button animation
-    gsap.to('#predict-button', {
-      scale: 0.95,
-      duration: 0.1,
-      yoyo: true,
-      repeat: 1
-    });
-    
+    setIsLoading(true); setPrediction(null); setShowAnalytics(false);
+    gsap.to('#predict-button', { scale: 0.97, duration: 0.1, yoyo: true, repeat: 1 });
     try {
-      const response = await fetch('/api/predict-price', {
+      const res = await fetch('/api/predict-price', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          country: manualForm.country,
-          city: manualForm.city,
+          country: manualForm.country, city: manualForm.city,
           property_type: manualForm.propertyType,
-          bedrooms: manualForm.bedrooms,
-          bathrooms: manualForm.bathrooms,
-          area: manualForm.area,
-          furnishing: manualForm.furnishing,
-          parking: manualForm.parking,
-          property_age: manualForm.propertyAge,
+          bedrooms: manualForm.bedrooms, bathrooms: manualForm.bathrooms,
+          area: manualForm.area, furnishing: manualForm.furnishing,
+          parking: manualForm.parking, property_age: manualForm.propertyAge,
           accommodates: manualForm.bedrooms + 1,
         }),
       });
-      const data = await response.json();
+      const data = await res.json();
       setPrediction({ predictedPrice: data.predicted_price, confidence: data.confidence, ...data });
       setShowAnalytics(true);
-    } catch (error) {
-      console.error('Prediction error:', error);
-    } finally {
-      setIsLoading(false);
-    }
+    } catch (e) { console.error('Prediction error:', e); }
+    finally { setIsLoading(false); }
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
+  const formatPrice = (price: number) =>
+    new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(price);
+
+  const confColor = (c: number) => c > 0.8 ? 'text-emerald-600' : c > 0.6 ? 'text-amber-600' : 'text-red-500';
+  const confBar   = (c: number) => c > 0.8 ? 'bg-emerald-500' : c > 0.6 ? 'bg-amber-500' : 'bg-red-500';
 
   return (
-    <div className="min-h-screen bg-surface">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-brand-coral/5 rounded-full blur-3xl floating-element"></div>
-        <div className="absolute top-40 right-20 w-96 h-96 bg-brand-pink/5 rounded-full blur-3xl floating-element" style={{animationDelay: '2s'}}></div>
-        <div className="absolute bottom-20 left-1/4 w-80 h-80 bg-brand-fuchsia/5 rounded-full blur-3xl floating-element" style={{animationDelay: '4s'}}></div>
-      </div>
+    <div className="min-h-screen bg-white">
 
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24">
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-coral/5 via-brand-pink/3 to-brand-fuchsia/5"></div>
-        
-        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      {/* ── Hero ── */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-24 pb-16 bg-white">
+
+        {/* Subtle background circles — light only */}
+        <div className="absolute top-20 left-10 w-80 h-80 rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, rgba(255,56,92,0.06) 0%, transparent 70%)' }} />
+        <div className="absolute bottom-20 right-10 w-96 h-96 rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, rgba(255,56,92,0.04) 0%, transparent 70%)' }} />
+
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-brand-coral/10 rounded-full text-brand-coral text-sm font-display font-600 mb-8 backdrop-blur-sm border border-brand-coral/20">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#fff0f3] border border-[#fcc] rounded-full text-primary text-sm font-display font-600 mb-8">
             <Sparkles className="w-4 h-4" />
             AI-Powered Property Intelligence
           </div>
 
-          {/* Main Title */}
-          <h1 className="hero-title font-display font-800 text-5xl sm:text-6xl lg:text-7xl text-brand-slate mb-6 leading-tight">
-            Transform Your
-            <span className="text-brand-coral"> Property Management</span>
-            <br />
-            with Smart AI
+          {/* Headline */}
+          <h1 className="hero-title font-display font-800 text-5xl sm:text-6xl lg:text-7xl text-[#1a1a1a] mb-6 leading-[1.05]">
+            Transform your<br />
+            <span className="text-primary">property management</span><br />
+            with smart AI
           </h1>
 
-          {/* Subtitle */}
-          <p className="hero-subtitle text-xl sm:text-2xl text-slate-600 mb-12 max-w-4xl mx-auto leading-relaxed">
-            Experience the future of real estate with intelligent price predictions, 
-            comprehensive analytics, and data-driven insights that maximize your property's potential.
+          <p className="hero-subtitle text-xl text-[#717171] mb-10 max-w-2xl mx-auto leading-relaxed">
+            Intelligent price predictions, comprehensive analytics, and data-driven insights
+            that maximise your property's potential.
           </p>
 
-          {/* CTA Buttons */}
-          <div className="hero-buttons flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <Link
-              to="/prediction"
-              className="group px-8 py-4 rounded-2xl text-lg font-display font-600 text-white bg-gradient-to-r from-brand-coral to-brand-pink hover:from-brand-pink hover:to-brand-fuchsia transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center"
-            >
-              <TrendingUp className="w-5 h-5 mr-2" />
+          {/* CTAs */}
+          <div className="hero-buttons flex flex-col sm:flex-row gap-3 justify-center mb-16">
+            <Link to="/prediction"
+              className="group btn-primary px-8 py-4 rounded-xl text-base flex items-center justify-center gap-2">
+              <TrendingUp className="w-5 h-5" />
               Try AI Prediction
-              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </Link>
-            <Link
-              to="/host"
-              className="px-8 py-4 rounded-2xl text-lg font-display font-600 text-brand-slate bg-gradient-to-r from-rose-50 to-pink-50 border-2 border-brand-pink/30 hover:border-brand-coral hover:text-brand-coral transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 flex items-center justify-center"
-            >
-              <Building className="w-5 h-5 mr-2" />
+            <Link to="/host"
+              className="btn-outline px-8 py-4 rounded-xl text-base flex items-center justify-center gap-2">
+              <Building className="w-5 h-5" />
               Property Dashboard
             </Link>
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-16">
-            <div className="text-center p-6 bg-gradient-to-br from-rose-50 to-pink-50 rounded-2xl border border-brand-pink/20 shadow-lg">
-              <div className="w-12 h-12 bg-gradient-to-br from-brand-coral to-brand-pink rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <DollarSign className="w-6 h-6 text-white" />
+          {/* Stats row */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            {[
+              { icon: DollarSign, value: '95%',  label: 'Accuracy Rate',         bg: 'bg-[#fff0f3]', border: 'border-[#fcc]',     iconBg: 'bg-primary' },
+              { icon: Users,      value: '10K+', label: 'Properties Analysed',   bg: 'bg-[#f0faf4]', border: 'border-[#c6e9d2]', iconBg: 'bg-emerald-500' },
+              { icon: Zap,        value: '2.5M', label: 'Data Points Processed', bg: 'bg-[#fff8f0]', border: 'border-[#fde8c8]', iconBg: 'bg-amber-500' },
+            ].map(s => (
+              <div key={s.label} className={`${s.bg} border ${s.border} rounded-2xl p-6 text-center`}
+                style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                <div className={`w-11 h-11 ${s.iconBg} rounded-xl flex items-center justify-center mx-auto mb-3`}>
+                  <s.icon className="w-5 h-5 text-white" />
+                </div>
+                <p className="font-display font-800 text-3xl text-[#1a1a1a] mb-1">{s.value}</p>
+                <p className="text-sm text-[#717171] font-medium">{s.label}</p>
               </div>
-              <h3 className="font-display font-700 text-3xl text-brand-slate mb-2">95%</h3>
-              <p className="text-slate-600 font-medium">Accuracy Rate</p>
-            </div>
-            <div className="text-center p-6 bg-gradient-to-br from-pink-50 to-orange-50 rounded-2xl border border-brand-fuchsia/20 shadow-lg">
-              <div className="w-12 h-12 bg-gradient-to-br from-brand-pink to-brand-fuchsia rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <Users className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="font-display font-700 text-3xl text-brand-slate mb-2">10K+</h3>
-              <p className="text-slate-600 font-medium">Properties Analyzed</p>
-            </div>
-            <div className="text-center p-6 bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl border border-brand-rose/20 shadow-lg">
-              <div className="w-12 h-12 bg-gradient-to-br from-brand-fuchsia to-brand-rose rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <Zap className="w-6 h-6 text-white" />
-              </div>
-              <h3 className="font-display font-700 text-3xl text-brand-slate mb-2">2.5M</h3>
-              <p className="text-slate-600 font-medium">Data Points Processed</p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-24 relative">
+      {/* ── Features ── */}
+      <section className="py-24 bg-[#f7f7f7]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="font-display font-700 text-4xl text-slate-900 mb-4">
-              Powerful Features for
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#e6002e] bg-gradient-to-r"> Modern Real Estate</span>
+          <div className="text-center mb-14">
+            <h2 className="font-display font-700 text-4xl text-[#1a1a1a] mb-4">
+              Powerful features for<br />
+              <span className="text-primary">modern real estate</span>
             </h2>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+            <p className="text-lg text-[#717171] max-w-2xl mx-auto">
               Everything you need to manage properties efficiently and make data-driven decisions.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="feature-card group p-8 bg-white rounded-2xl shadow-xl border border-slate-100 hover:shadow-2xl hover:border-primary/20 transition-all duration-300">
-              <div className="w-14 h-14 bg-gradient-to-br from-primary to-[#e6002e] rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <TrendingUp className="w-7 h-7 text-white" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                icon: TrendingUp, iconBg: 'bg-[#fff0f3]', iconColor: 'text-primary',
+                title: 'Smart Pricing',
+                desc: 'Advanced AI algorithms analyse market trends, property features, and location data to provide accurate price predictions that maximise your rental income.',
+              },
+              {
+                icon: BarChart3, iconBg: 'bg-[#f0f7ff]', iconColor: 'text-blue-600',
+                title: 'Advanced Analytics',
+                desc: 'Comprehensive dashboards with real-time insights, market comparisons, and performance metrics to optimise your property portfolio strategy.',
+              },
+              {
+                icon: Shield, iconBg: 'bg-[#f0faf4]', iconColor: 'text-emerald-600',
+                title: 'Data Security',
+                desc: 'Enterprise-grade security with encrypted data storage, secure authentication, and regular backups to protect your property information.',
+              },
+            ].map(f => (
+              <div key={f.title}
+                className="feature-card bg-white rounded-2xl border border-[#e0e0e0] p-8 hover:shadow-card transition-all duration-200"
+                style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                <div className={`w-12 h-12 ${f.iconBg} rounded-xl flex items-center justify-center mb-5`}>
+                  <f.icon className={`w-6 h-6 ${f.iconColor}`} />
+                </div>
+                <h3 className="font-display font-700 text-lg text-[#1a1a1a] mb-3">{f.title}</h3>
+                <p className="text-sm text-[#717171] leading-relaxed">{f.desc}</p>
               </div>
-              <h3 className="font-display font-600 text-xl text-slate-900 mb-3">Smart Pricing</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Advanced AI algorithms analyze market trends, property features, and location data to provide accurate price predictions that maximize your rental income.
-              </p>
-            </div>
-
-            <div className="feature-card group p-8 bg-white rounded-2xl shadow-xl border border-slate-100 hover:shadow-2xl hover:border-primary/20 transition-all duration-300" style={{animationDelay: '0.1s'}}>
-              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <BarChart3 className="w-7 h-7 text-white" />
-              </div>
-              <h3 className="font-display font-600 text-xl text-slate-900 mb-3">Advanced Analytics</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Comprehensive dashboards with real-time insights, market comparisons, and performance metrics to optimize your property portfolio strategy.
-              </p>
-            </div>
-
-            <div className="feature-card group p-8 bg-white rounded-2xl shadow-xl border border-slate-100 hover:shadow-2xl hover:border-primary/20 transition-all duration-300" style={{animationDelay: '0.2s'}}>
-              <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Shield className="w-7 h-7 text-white" />
-              </div>
-              <h3 className="font-display font-600 text-xl text-slate-900 mb-3">Data Security</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Enterprise-grade security with encrypted data storage, secure authentication, and regular backups to protect your property information.
-              </p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Quick Prediction Demo */}
-      <section className="py-24 bg-gradient-to-br from-slate-50 to-white">
+      {/* ── Quick Prediction Demo ── */}
+      <section className="py-24 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="font-display font-700 text-4xl text-slate-900 mb-4">
-              Try AI Price Prediction
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#e6002e] bg-gradient-to-r"> Instantly</span>
+          <div className="text-center mb-14">
+            <h2 className="font-display font-700 text-4xl text-[#1a1a1a] mb-4">
+              Try AI price prediction <span className="text-primary">instantly</span>
             </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto mb-12">
-              Experience the power of AI with our quick prediction tool. Just enter your property details.
+            <p className="text-lg text-[#717171] max-w-xl mx-auto">
+              Experience the power of AI. Just enter your property details and see the result.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+
             {/* Form */}
-            <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 p-8">
-              <h2 className="font-display font-700 text-2xl text-slate-900 mb-8 flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary to-[#e6002e] rounded-xl flex items-center justify-center">
-                  <Home className="w-4 h-4 text-white" />
+            <div className="bg-white rounded-2xl border border-[#e0e0e0] p-8"
+              style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.08)' }}>
+
+              <div className="flex items-center gap-3 mb-7">
+                <div className="w-9 h-9 bg-[#fff0f3] border border-[#fcc] rounded-xl flex items-center justify-center">
+                  <Home className="w-4 h-4 text-primary" />
                 </div>
-                Property Details
-              </h2>
-              <form onSubmit={handleManualSubmit} className="space-y-6">
-                {/* Location */}
+                <h3 className="font-display font-700 text-lg text-[#1a1a1a]">Property Details</h3>
+              </div>
+
+              <form onSubmit={handleManualSubmit} className="space-y-5">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-display font-600 text-slate-700 uppercase tracking-wide mb-2">
-                      Country
-                    </label>
-                    <input
-                      type="text"
-                      value={manualForm.country}
-                      onChange={(e) => setManualForm({ ...manualForm, country: e.target.value })}
-                      className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-900 transition-all duration-200"
-                    />
+                    <label className="form-label">Country</label>
+                    <input type="text" value={manualForm.country}
+                      onChange={e => setManualForm({ ...manualForm, country: e.target.value })}
+                      className={inputCls} />
                   </div>
                   <div>
-                    <label className="block text-sm font-display font-600 text-slate-700 uppercase tracking-wide mb-2">
-                      City *
-                    </label>
+                    <label className="form-label">City *</label>
                     <div className="relative">
-                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                      <input
-                        type="text"
-                        required
-                        value={manualForm.city}
-                        onChange={(e) => setManualForm({ ...manualForm, city: e.target.value })}
-                        placeholder="e.g. Mumbai, Delhi, Bangalore"
-                        className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-900 transition-all duration-200"
-                      />
+                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#aaaaaa]" />
+                      <input type="text" required value={manualForm.city}
+                        onChange={e => setManualForm({ ...manualForm, city: e.target.value })}
+                        placeholder="Mumbai, Delhi…"
+                        className={`${inputCls} pl-10`} />
                     </div>
                   </div>
                 </div>
 
-                {/* Property Type */}
                 <div>
-                  <label className="block text-sm font-display font-600 text-slate-700 uppercase tracking-wide mb-2">
-                    Property Type
-                  </label>
-                  <select
-                    value={manualForm.propertyType}
-                    onChange={(e) => setManualForm({ ...manualForm, propertyType: e.target.value })}
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-900 bg-white transition-all duration-200"
-                  >
-                    {PROPERTY_TYPES.map(t => (
-                      <option key={t} value={t.toLowerCase()}>{t}</option>
-                    ))}
+                  <label className="form-label">Property Type</label>
+                  <select value={manualForm.propertyType}
+                    onChange={e => setManualForm({ ...manualForm, propertyType: e.target.value })}
+                    className={inputCls}>
+                    {PROPERTY_TYPES.map(t => <option key={t} value={t.toLowerCase()}>{t}</option>)}
                   </select>
                 </div>
 
-                {/* Room Details */}
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-sm font-display font-600 text-slate-700 uppercase tracking-wide mb-2 flex items-center gap-1">
-                      <Bed className="w-3 h-3" /> Beds
-                    </label>
-                    <input
-                      type="number"
-                      min={1}
-                      max={20}
-                      value={manualForm.bedrooms}
-                      onChange={(e) => setManualForm({ ...manualForm, bedrooms: parseInt(e.target.value) })}
-                      className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-900 transition-all duration-200"
-                    />
+                    <label className="form-label flex items-center gap-1"><Bed className="w-3 h-3" />Beds</label>
+                    <input type="number" min={1} max={20} value={manualForm.bedrooms}
+                      onChange={e => setManualForm({ ...manualForm, bedrooms: parseInt(e.target.value) })}
+                      className={inputCls} />
                   </div>
                   <div>
-                    <label className="block text-sm font-display font-600 text-slate-700 uppercase tracking-wide mb-2 flex items-center gap-1">
-                      <Bath className="w-3 h-3" /> Baths
-                    </label>
-                    <input
-                      type="number"
-                      min={1}
-                      max={20}
-                      value={manualForm.bathrooms}
-                      onChange={(e) => setManualForm({ ...manualForm, bathrooms: parseInt(e.target.value) })}
-                      className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-900 transition-all duration-200"
-                    />
+                    <label className="form-label flex items-center gap-1"><Bath className="w-3 h-3" />Baths</label>
+                    <input type="number" min={1} max={20} value={manualForm.bathrooms}
+                      onChange={e => setManualForm({ ...manualForm, bathrooms: parseInt(e.target.value) })}
+                      className={inputCls} />
                   </div>
                   <div>
-                    <label className="block text-sm font-display font-600 text-slate-700 uppercase tracking-wide mb-2 flex items-center gap-1">
-                      <Maximize className="w-3 h-3" /> Area (sqft)
-                    </label>
-                    <input
-                      type="number"
-                      min={100}
-                      value={manualForm.area}
-                      onChange={(e) => setManualForm({ ...manualForm, area: parseInt(e.target.value) })}
-                      className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-slate-900 transition-all duration-200"
-                    />
+                    <label className="form-label flex items-center gap-1"><Maximize className="w-3 h-3" />Sqft</label>
+                    <input type="number" min={100} value={manualForm.area}
+                      onChange={e => setManualForm({ ...manualForm, area: parseInt(e.target.value) })}
+                      className={inputCls} />
                   </div>
                 </div>
 
-                {/* Furnishing */}
                 <div>
-                  <label className="block text-sm font-display font-600 text-slate-700 uppercase tracking-wide mb-2">
-                    Furnishing
-                  </label>
-                  <div className="flex gap-3">
+                  <label className="form-label">Furnishing</label>
+                  <div className="flex gap-2">
                     {FURNISHING_OPTIONS.map(opt => (
-                      <button
-                        key={opt}
-                        type="button"
+                      <button key={opt} type="button"
                         onClick={() => setManualForm({ ...manualForm, furnishing: opt })}
-                        className={`flex-1 py-3 text-sm rounded-xl border transition-all duration-200 font-medium capitalize ${
+                        className={`flex-1 py-2.5 text-xs rounded-xl border font-medium capitalize transition-all duration-150 ${
                           manualForm.furnishing === opt
-                            ? 'bg-primary text-white border-primary shadow-lg'
-                            : 'border-slate-200 text-slate-700 hover:border-primary hover:text-primary'
-                        }`}
-                      >
+                            ? 'bg-[#1a1a1a] text-white border-[#1a1a1a]'
+                            : 'border-[#dddddd] text-[#717171] hover:border-[#1a1a1a] hover:text-[#1a1a1a]'
+                        }`}>
                         {opt.replace('-', ' ')}
                       </button>
                     ))}
                   </div>
                 </div>
 
-                <button
-                  id="predict-button"
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full py-4 rounded-2xl text-base font-display font-600 text-white bg-gradient-to-r from-primary to-[#e6002e] hover:from-blue-600 hover:to-primary transition-all duration-300 shadow-xl hover:shadow-2xl disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                      Predicting Price...
-                    </>
-                  ) : (
-                    <>
-                      <TrendingUp className="w-5 h-5 mr-2" />
-                      Predict Price
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </>
-                  )}
+                <button id="predict-button" type="submit" disabled={isLoading}
+                  className="btn-primary w-full py-4 rounded-xl text-sm flex items-center justify-center gap-2 font-display font-600">
+                  {isLoading
+                    ? <><Loader2 className="w-5 h-5 animate-spin" />Predicting price…</>
+                    : <><TrendingUp className="w-5 h-5" />Predict price<ArrowRight className="w-4 h-4" /></>}
                 </button>
               </form>
             </div>
 
             {/* Results */}
-            <div className="space-y-6">
+            <div className="space-y-5">
+              {!prediction && !isLoading && (
+                <div className="bg-[#f7f7f7] border border-[#e0e0e0] rounded-2xl p-12 text-center">
+                  <div className="w-14 h-14 bg-[#fff0f3] border border-[#fcc] rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Sparkles className="w-6 h-6 text-primary" />
+                  </div>
+                  <p className="font-display font-600 text-[#1a1a1a] mb-1">Ready to predict</p>
+                  <p className="text-sm text-[#717171]">Fill in your property details and click "Predict price"</p>
+                </div>
+              )}
+
               {prediction && (
-                <div className="animate-fade-in">
-                  {/* Main Result */}
-                  <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 p-8 text-center">
-                    <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary/20 to-blue-500/20 rounded-full text-primary text-sm font-display font-600 mb-4">
-                      <Star className="w-4 h-4 mr-1" />
-                      AI Predicted Price
+                <div className="animate-fade-in space-y-5">
+                  {/* Main result */}
+                  <div className="bg-white border border-[#e0e0e0] rounded-2xl p-8 text-center"
+                    style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.08)' }}>
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#fff0f3] border border-[#fcc] rounded-full text-primary text-xs font-600 mb-5">
+                      <Star className="w-3.5 h-3.5" />AI Predicted Price
                     </div>
-                    <div className="mb-2">
-                      <span className="font-display font-800 text-5xl text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#e6002e] bg-gradient-to-r">
-                        {formatPrice(prediction.predictedPrice)}
-                      </span>
-                      <span className="text-slate-600 text-lg ml-2">per night</span>
+                    <div>
+                      <span className="font-display font-800 text-5xl text-[#1a1a1a]">{formatPrice(prediction.predictedPrice)}</span>
+                      <span className="text-[#717171] text-base ml-2">per night</span>
                     </div>
                     {prediction.fallback && (
                       <div className="mt-4 px-4 py-2 bg-amber-50 border border-amber-200 rounded-xl text-amber-700 text-sm">
@@ -484,39 +319,31 @@ const PropertyManagement = () => {
                   </div>
 
                   {/* Confidence */}
-                  <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 p-6">
+                  <div className="bg-white border border-[#e0e0e0] rounded-2xl p-6"
+                    style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                     <div className="flex justify-between items-center mb-4">
-                      <h4 className="font-display font-600 text-slate-900">Confidence Score</h4>
-                      <span className={`font-display font-700 text-2xl ${
-                        prediction.confidence > 0.8 ? 'text-emerald-600' :
-                        prediction.confidence > 0.6 ? 'text-amber-600' : 'text-red-500'
-                      }`}>
+                      <p className="font-display font-600 text-sm text-[#1a1a1a]">Confidence Score</p>
+                      <span className={`font-display font-700 text-2xl ${confColor(prediction.confidence)}`}>
                         {(prediction.confidence * 100).toFixed(1)}%
                       </span>
                     </div>
-                    <div className="w-full bg-slate-100 rounded-full h-3 mb-2">
-                      <div
-                        className={`h-3 rounded-full transition-all duration-1000 ${
-                          prediction.confidence > 0.8 ? 'bg-emerald-500 w-full' :
-                          prediction.confidence > 0.6 ? 'bg-amber-500' : 'bg-red-500'
-                        }`}
-                        style={{ width: `${prediction.confidence * 100}%` }}
-                      />
+                    <div className="w-full bg-[#f0f0f0] rounded-full h-2.5">
+                      <div className={`h-2.5 rounded-full transition-all duration-1000 ${confBar(prediction.confidence)}`}
+                        style={{ width: `${prediction.confidence * 100}%` }} />
                     </div>
                   </div>
 
-                  {/* Analytics */}
                   {showAnalytics && (
                     <div className="space-y-4 animate-fade-in">
                       <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-4">
+                        <div className="bg-white border border-[#e0e0e0] rounded-2xl p-4" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                           <PriceChart prediction={prediction} />
                         </div>
-                        <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-4">
+                        <div className="bg-white border border-[#e0e0e0] rounded-2xl p-4" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                           <ConfidenceChart prediction={prediction} />
                         </div>
                       </div>
-                      <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-4">
+                      <div className="bg-white border border-[#e0e0e0] rounded-2xl p-4" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                         <PricePerSqFtChart prediction={prediction} area={manualForm.area} />
                       </div>
                     </div>
@@ -528,37 +355,33 @@ const PropertyManagement = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-br from-primary to-[#e6002e] relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="font-display font-700 text-4xl text-white mb-6">
-            Ready to Transform Your
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-100 bg-gradient-to-r"> Property Business?</span>
+      {/* ── CTA Banner ── */}
+      <section className="py-20 bg-[#1a1a1a]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="font-display font-700 text-4xl text-white mb-4">
+            Ready to transform your<br />
+            <span className="text-primary">property business?</span>
           </h2>
-          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of property managers using AI to optimize pricing and maximize revenue.
+          <p className="text-white/60 text-lg mb-10 max-w-xl mx-auto">
+            Join thousands of property managers using AI to optimise pricing and maximise revenue.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/host"
-              className="group px-8 py-4 rounded-2xl text-lg font-display font-600 text-primary bg-white hover:bg-blue-50 transition-all duration-300 shadow-xl hover:shadow-2xl flex items-center justify-center"
-            >
-              <Building className="w-5 h-5 mr-2" />
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link to="/host"
+              className="group px-8 py-4 rounded-xl text-base font-display font-600 bg-primary text-white hover:bg-[hsl(349,100%,54%)] transition-colors flex items-center justify-center gap-2"
+              style={{ boxShadow: '0 4px 14px rgba(255,56,92,0.45)' }}>
+              <Building className="w-5 h-5" />
               Go to Dashboard
-              <ArrowUpRight className="w-4 h-4 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </Link>
-            <Link
-              to="/explore"
-              className="px-8 py-4 rounded-2xl text-lg font-display font-600 text-white border-2 border-white/30 hover:border-white hover:bg-white/10 transition-all duration-300 flex items-center justify-center"
-            >
+            <Link to="/explore"
+              className="px-8 py-4 rounded-xl text-base font-display font-600 text-white border border-white/20 hover:border-white/50 hover:bg-white/5 transition-all duration-150 flex items-center justify-center">
               Browse Properties
             </Link>
           </div>
         </div>
       </section>
 
-      </div>
+    </div>
   );
 };
 
