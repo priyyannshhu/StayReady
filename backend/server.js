@@ -379,17 +379,6 @@ app.get('/api/properties/:id', async (req, res) => {
   }
 });
 
-// POST /api/properties - Create new property
-app.post('/api/properties', async (req, res) => {
-  try {
-    const property = new Property(req.body);
-    await property.save();
-    res.status(201).json(property);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
 // POST /api/bookings - Create new booking with payment simulation
 app.post('/api/bookings', async (req, res) => {
   try {
@@ -477,51 +466,6 @@ app.get('/api/bookings/:bookingId', async (req, res) => {
     res.json(booking);
   } catch (error) {
     res.status(500).json({ error: error.message });
-  }
-});
-
-// POST /api/predict-price - Get ML price prediction (updated for real dataset)
-app.post('/api/predict-price', async (req, res) => {
-  try {
-    const { city, bedrooms, bathrooms, accommodates, propertyType, latitude, longitude } = req.body;
-    
-    // Call ML service
-    const axios = require('axios');
-    const response = await axios.post(`${process.env.ML_SERVICE_URL || 'http://localhost:8000'}/predict`, {
-      city,
-      bedrooms,
-      bathrooms,
-      accommodates,
-      property_type: propertyType,
-      latitude,
-      longitude
-    });
-    
-    res.json(response.data);
-  } catch (error) {
-    console.error('ML Service Error:', error.message);
-    
-    // Fallback to simple rule-based pricing if ML service is down
-    const basePrice = 50;
-    const locationMultiplier = {
-      'New York': 1.8, 'Los Angeles': 1.5, 'Miami': 1.4, 'Chicago': 1.2,
-      'San Francisco': 2.0, 'Seattle': 1.3, 'Austin': 1.1
-    }[city] || 1.0;
-    
-    const bedroomPrice = bedrooms * 30;
-    const bathroomPrice = bathrooms * 25;
-    const accommodatePrice = accommodates * 20;
-    
-    const predictedPrice = Math.round(
-      (basePrice + bedroomPrice + bathroomPrice + accommodatePrice) * locationMultiplier
-    );
-    
-    res.json({
-      predicted_price: predictedPrice,
-      confidence: 0.75,
-      city,
-      fallback: true
-    });
   }
 });
 
@@ -745,10 +689,15 @@ app.post('/api/predict-price', async (req, res) => {
     
     try {
       // First check if ML service is available
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 5000);
+      
       const healthCheck = await fetch(`${ML_SERVICE_URL}/`, {
         method: 'GET',
-        timeout: 5000
+        signal: controller.signal
       });
+      
+      clearTimeout(timer);
       
       if (!healthCheck.ok) {
         throw new Error('ML service unavailable');
@@ -759,6 +708,9 @@ app.post('/api/predict-price', async (req, res) => {
         console.log('ML model not loaded, using fallback pricing');
         throw new Error('ML model not loaded');
       }
+      
+      const controller2 = new AbortController();
+      const timer2 = setTimeout(() => controller2.abort(), 30000);
       
       const response = await fetch(`${ML_SERVICE_URL}/predict`, {
         method: 'POST',
@@ -778,8 +730,10 @@ app.post('/api/predict-price', async (req, res) => {
           property_age,
           accommodates
         }),
-        timeout: 30000 // 30 second timeout
+        signal: controller2.signal
       });
+      
+      clearTimeout(timer2);
       
       if (!response.ok) {
         throw new Error(`ML service responded with status: ${response.status}`);
